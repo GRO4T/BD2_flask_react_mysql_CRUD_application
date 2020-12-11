@@ -6,6 +6,10 @@ services:
       - '5000:80'
     tmpfs:
       - /tmp
+    environment:
+      - DB_USERNAME=${MARIADB_USERNAME}
+      - DB_PASSWORD=${MARIADB_PASSWORD}
+      - DB_DATABASE=${MARIADB_DATABASE}
   db:
     image: webhippie/mariadb:latest
     restart: always
