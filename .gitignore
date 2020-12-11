@@ -1,2 +1,3 @@
-data
+data/*
+!generators/data
 __pycache__
