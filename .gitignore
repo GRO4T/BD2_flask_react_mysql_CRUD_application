@@ -1,3 +1,4 @@
 data/*
-!generators/data
+!initializer/app/generators/data
 __pycache__
+.idea
