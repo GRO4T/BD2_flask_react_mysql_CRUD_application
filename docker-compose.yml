@@ -1,9 +1,21 @@
 version: '3'
 services:
   backend:
+    depends_on:
+      - db
     build: backend
     ports:
       - '5000:80'
+    tmpfs:
+      - /tmp
+    environment:
+      - DB_USERNAME=${MARIADB_USERNAME}
+      - DB_PASSWORD=${MARIADB_PASSWORD}
+      - DB_DATABASE=${MARIADB_DATABASE}
+  initializer:
+    depends_on:
+      - db
+    build: initializer
     tmpfs:
       - /tmp
     environment:
