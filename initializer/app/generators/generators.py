@@ -1,4 +1,5 @@
 from . import pracownik
+from . import hierarchy
 
 from typing import List, Tuple, Dict
 
@@ -11,6 +12,10 @@ def generate_accounts_and_employees(n: int) -> List[List[Tuple[str, Dict]]]:
         item = next(emp_gen)
         data.append(item)
     return data
+
+def generate_hierarchy(data):
+    data =  hierarchy.generate_hierarchy(data)
+    return data;
 
 
 if __name__ == "__main__":

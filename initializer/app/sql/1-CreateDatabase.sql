@@ -18,12 +18,6 @@ CREATE TABLE grupa (
     kierownik_id   INTEGER(5) NOT NULL
 );
  
-CREATE UNIQUE INDEX grupa__idx ON
-    grupa (
-        kierownik_id
-    ASC );
- 
- 
 CREATE TABLE kompetencja (
     id      INTEGER(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa   VARCHAR(255 ) NOT NULL

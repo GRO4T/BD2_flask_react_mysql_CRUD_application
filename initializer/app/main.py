@@ -49,7 +49,8 @@ def run_init_scripts(conn):
 
 def run_data_generator(conn):
     with conn.cursor() as cursor:
-        objects = generators.generate_accounts_and_employees(10)
+        objects = generators.generate_accounts_and_employees(1000)
+        objects = generators.generate_hierarchy(objects)
         for obj in objects:
             for table_name, table_values in obj:
                 column_names = ','.join(map(lambda x: "%s" % x[0], table_values.items()))
