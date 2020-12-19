@@ -47,12 +47,25 @@ def run_init_scripts(conn):
                 cursor.execute(sql)
     conn.commit()
 
+def run_data_generator(conn):
+    with conn.cursor() as cursor:
+        objects = generators.generate_accounts_and_employees(10)
+        for obj in objects:
+            for table_name, table_values in obj:
+                column_names = ','.join(map(lambda x: "%s" % x[0], table_values.items()))
+                column_values = ','.join(map(lambda x: "'%s'" % x[1], table_values.items()))
+                sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, column_names, column_values)
+                print(sql)
+                cursor.execute(sql)
+    conn.commit()
+
+
 def main():
     conn = connect()
-    data = generators.generate_accounts_and_employees(10)
 
     if check_db_empty(conn):
         run_init_scripts(conn)
+        run_data_generator(conn)
     print("Database initialized")
 
 

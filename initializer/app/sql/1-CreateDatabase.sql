@@ -1,5 +1,5 @@
 CREATE TABLE dzial (
-    id             INTEGER(2) NOT NULL,
+    id             INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa          VARCHAR(255 ) NOT NULL,
     zarzad_id      INTEGER(2) NOT NULL,
     kierownik_id   INTEGER(5) NOT NULL
@@ -10,10 +10,9 @@ CREATE UNIQUE INDEX dzial__idx ON
         kierownik_id
     ASC );
  
-ALTER TABLE dzial ADD CONSTRAINT dzial_pk PRIMARY KEY ( id );
  
 CREATE TABLE grupa (
-    id             INTEGER(2) NOT NULL,
+    id             INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa          VARCHAR(255 ) NOT NULL,
     dzial_id       INTEGER(2) NOT NULL,
     kierownik_id   INTEGER(5) NOT NULL
@@ -24,14 +23,12 @@ CREATE UNIQUE INDEX grupa__idx ON
         kierownik_id
     ASC );
  
-ALTER TABLE grupa ADD CONSTRAINT grupa_pk PRIMARY KEY ( id );
  
 CREATE TABLE kompetencja (
-    id      INTEGER(4) NOT NULL,
+    id      INTEGER(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa   VARCHAR(255 ) NOT NULL
 );
  
-ALTER TABLE kompetencja ADD CONSTRAINT kompetencja_pk PRIMARY KEY ( id );
  
 CREATE TABLE kompetencje_pracownika (
     kompetencja_id   INTEGER(4) NOT NULL,
@@ -42,24 +39,21 @@ ALTER TABLE kompetencje_pracownika ADD CONSTRAINT komprac_pk PRIMARY KEY ( kompe
                                                                            pracownik_id );
  
 CREATE TABLE konto_uzytkownika (
-    id                  INTEGER(5) NOT NULL,
+    id                  INTEGER(5) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa_uzytkownika   VARCHAR(64) NOT NULL,
     haslo               CHAR(64 ) NOT NULL
 );
  
-ALTER TABLE konto_uzytkownika ADD CONSTRAINT kontouzyt_pk PRIMARY KEY ( id );
- 
 CREATE TABLE nieobecnosci (
-    id             INTEGER(7) NOT NULL,
+    id             INTEGER(7) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     poczatek       DATE NOT NULL,
     koniec         DATE NOT NULL,
     pracownik_id   INTEGER(5) NOT NULL
 );
  
-ALTER TABLE nieobecnosci ADD CONSTRAINT nieobecnosci_pk PRIMARY KEY ( id );
  
 CREATE TABLE pracownik (
-    id                     INTEGER(5) NOT NULL,
+    id                     INTEGER(5) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     imie                   VARCHAR(64 ) NOT NULL,
     nazwisko               VARCHAR(64 ) NOT NULL,
     pracownik_id           INTEGER(5),
@@ -69,48 +63,37 @@ CREATE TABLE pracownik (
     konto_uzytkownika_id   INTEGER(5) NOT NULL
 );
  
--- Error - Index Pracownik__IDX has no columns
- 
-ALTER TABLE pracownik ADD CONSTRAINT pracownik_pk PRIMARY KEY ( id );
  
 CREATE TABLE slownik_zastepstw (
-    id               INTEGER(6) NOT NULL,
+    id               INTEGER(6) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     pracownik_kto    INTEGER(5) NOT NULL,
     pracownik_kogo   INTEGER(5) NOT NULL
 );
  
-ALTER TABLE slownik_zastepstw ADD CONSTRAINT slowzast_pk PRIMARY KEY ( id );
- 
 CREATE TABLE zakres_obowiazkow (
-    id                 INTEGER(7) NOT NULL,
+    id                 INTEGER(7) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     opis_obowiazku     VARCHAR(255 ) NOT NULL,
     data_dodania       DATE NOT NULL,
     termin_wykonania   DATE NOT NULL,
     pracownik_id       INTEGER(5) NOT NULL
 );
  
-ALTER TABLE zakres_obowiazkow ADD CONSTRAINT zakres_obowiazkow_pk PRIMARY KEY ( id );
- 
 CREATE TABLE zarzad (
-    id                 INTEGER(2) NOT NULL,
+    id                 INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa_stanowiska   VARCHAR(127 ) NOT NULL,
     pracownik_id       INTEGER(5) NOT NULL
 );
  
-ALTER TABLE zarzad ADD CONSTRAINT zarzad_pk PRIMARY KEY ( id );
- 
 CREATE TABLE zastepstwo (
-    id                INTEGER(8) NOT NULL,
+    id                INTEGER(8) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     poczatek          DATE NOT NULL,
     koniec            DATE NOT NULL,
     nieobecnosci_id   INTEGER(7) NOT NULL,
     slowzast_id       INTEGER(6) NOT NULL
 );
  
-ALTER TABLE zastepstwo ADD CONSTRAINT zastepstwo_pk PRIMARY KEY ( id );
- 
 CREATE TABLE zespol (
-    id             INTEGER(2) NOT NULL,
+    id             INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nazwa          VARCHAR(255 ) NOT NULL,
     grupa_id       INTEGER(2) NOT NULL,
     kierownik_id   INTEGER(5) NOT NULL
@@ -120,8 +103,6 @@ CREATE UNIQUE INDEX zespol__idx ON
     zespol (
         kierownik_id
     ASC );
- 
-ALTER TABLE zespol ADD CONSTRAINT zespol_pk PRIMARY KEY ( id );
  
 ALTER TABLE dzial
     ADD CONSTRAINT dzial_pracownik_fk FOREIGN KEY ( kierownik_id )
