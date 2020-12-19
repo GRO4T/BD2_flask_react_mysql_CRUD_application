@@ -29,6 +29,7 @@ def generator():
     email_domains = ["@gmail.com", "@wp.pl", "@onet.pl", "@hotmail.com",
                      "@outlook.com", "@o2.pl", "@interia.pl", "@yahoo.com"]
 
+    account_counter = 1
     while True:
         employee = dict()
 
@@ -50,11 +51,13 @@ def generator():
             "nazwa_uzytkownika": employee["imie"][0].lower() + employee["nazwisko"].lower() + employee["pesel"][0:2],
             "haslo": hashlib.md5(password.encode("utf-8")).hexdigest()
         }
+        employee['konto_uzytkownika_id'] = account_counter
 
         ret = [
             ("konto_uzytkownika", account),
             ("pracownik", employee)
         ]
+        account_counter = account_counter + 1
         yield ret
 
 
