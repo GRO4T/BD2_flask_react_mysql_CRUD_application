@@ -7,10 +7,10 @@ import time
 
 def open_connection():
     username = os.environ["DB_USERNAME"]
-    password = os.environ["DB_PASSWORD"]
+    password = os.environ["DB_ROOT_PASSWORD"]
     host = "db"
     database = os.environ["DB_DATABASE"]
-    return pymysql.connect(host, username, password, database, client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS)
+    return pymysql.connect(host, 'root', password, database, client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS)
 
 def try_connect():
     try:
@@ -33,7 +33,7 @@ def check_db_empty(conn):
 SELECT count(*)
 FROM information_schema.TABLES
 WHERE (TABLE_SCHEMA = '{}') AND (TABLE_NAME = '{}')
-        """.format(os.environ["DB_DATABASE"], 'Pracownik'))
+        """.format(os.environ["DB_DATABASE"], 'pracownik'))
         return cursor.fetchone()[0] == 0
 
 def run_init_scripts(conn):
