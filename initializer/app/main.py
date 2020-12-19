@@ -56,7 +56,7 @@ def run_data_generator(conn):
                 column_names = ','.join(map(lambda x: "%s" % x[0], table_values.items()))
                 column_values = ','.join(map(lambda x: "'%s'" % x[1], table_values.items()))
                 sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, column_names, column_values)
-                print(sql)
+                # print(sql)
                 cursor.execute(sql)
     conn.commit()
 
