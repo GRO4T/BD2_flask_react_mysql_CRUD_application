@@ -1,6 +1,6 @@
 CREATE TABLE dzial (
     id             INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nazwa          VARCHAR(255 ) NOT NULL,
+    nazwa          VARCHAR(255 ) NOT NULL UNIQUE,
     zarzad_id      INTEGER(2) NOT NULL,
     kierownik_id   INTEGER(5) NOT NULL
 );
@@ -13,14 +13,14 @@ CREATE UNIQUE INDEX dzial__idx ON
  
 CREATE TABLE grupa (
     id             INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nazwa          VARCHAR(255 ) NOT NULL,
+    nazwa          VARCHAR(255 ) NOT NULL UNIQUE,
     dzial_id       INTEGER(2) NOT NULL,
     kierownik_id   INTEGER(5) NOT NULL
 );
  
 CREATE TABLE kompetencja (
     id      INTEGER(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nazwa   VARCHAR(255 ) NOT NULL
+    nazwa   VARCHAR(255 ) NOT NULL UNIQUE
 );
  
  
@@ -34,7 +34,7 @@ ALTER TABLE kompetencje_pracownika ADD CONSTRAINT komprac_pk PRIMARY KEY ( kompe
  
 CREATE TABLE konto_uzytkownika (
     id                  INTEGER(5) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nazwa_uzytkownika   VARCHAR(64) NOT NULL,
+    nazwa_uzytkownika   VARCHAR(64) NOT NULL UNIQUE,
     haslo               CHAR(64 ) NOT NULL
 );
  
@@ -51,10 +51,10 @@ CREATE TABLE pracownik (
     imie                   VARCHAR(64 ) NOT NULL,
     nazwisko               VARCHAR(64 ) NOT NULL,
     pracownik_id           INTEGER(5),
-    pesel                  CHAR(11 ) NOT NULL,
-    email                  VARCHAR(64 ) NOT NULL,
+    pesel                  CHAR(11 ) NOT NULL UNIQUE,
+    email                  VARCHAR(64 ) NOT NULL UNIQUE,
     numer_telefonu         VARCHAR(20 ) NOT NULL,
-    konto_uzytkownika_id   INTEGER(5) NOT NULL
+    konto_uzytkownika_id   INTEGER(5) NOT NULL UNIQUE
 );
  
  
@@ -74,7 +74,7 @@ CREATE TABLE zakres_obowiazkow (
  
 CREATE TABLE zarzad (
     id                 INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nazwa_stanowiska   VARCHAR(127 ) NOT NULL,
+    nazwa_stanowiska   VARCHAR(127 ) NOT NULL UNIQUE,
     pracownik_id       INTEGER(5) NOT NULL
 );
  
@@ -88,7 +88,7 @@ CREATE TABLE zastepstwo (
  
 CREATE TABLE zespol (
     id             INTEGER(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nazwa          VARCHAR(255 ) NOT NULL,
+    nazwa          VARCHAR(255 ) NOT NULL UNIQUE,
     grupa_id       INTEGER(2) NOT NULL,
     kierownik_id   INTEGER(5) NOT NULL
 );

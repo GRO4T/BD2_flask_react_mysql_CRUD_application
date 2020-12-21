@@ -3,29 +3,7 @@
 import generators.generators as generators
 import pymysql
 import os
-import time
-
-def open_connection():
-    username = os.environ["DB_USERNAME"]
-    password = os.environ["DB_ROOT_PASSWORD"]
-    host = "db"
-    database = os.environ["DB_DATABASE"]
-    return pymysql.connect(host, 'root', password, database, client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS)
-
-def try_connect():
-    try:
-        return open_connection()
-    except Exception as e:
-        print(e)
-        return None
-
-def connect():
-    conn = try_connect()
-    while conn is None:
-        print("Retrying connection")
-        conn = try_connect()
-        time.sleep(1)
-    return conn
+from connection import connect
 
 def check_db_empty(conn):
     with conn.cursor() as cursor:
