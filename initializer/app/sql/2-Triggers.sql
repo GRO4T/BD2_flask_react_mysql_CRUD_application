@@ -7,8 +7,8 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: początek musi być przed koniec'; 
     END IF;
 	
-    SET @is_overlapping_absence = (SELECT COUNT(*) FROM nieobecnosci WHERE pracownik_id = NEW.pracownik_id AND koniec >= NEW.poczatek AND poczatek <= NEW.poczatek);
-    IF @is_overlapping_absence > 0 THEN
+    SET is_overlapping_absence = (SELECT COUNT(*) FROM nieobecnosci WHERE pracownik_id = NEW.pracownik_id AND koniec >= NEW.poczatek AND poczatek <= NEW.poczatek);
+    IF is_overlapping_absence > 0 THEN
     	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: nie można dodać nieobecności dla kogoś kto już jest nieobecny';
     END IF;
 END;
@@ -21,8 +21,8 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: początek musi być przed koniec'; 
     END IF;
 	
-    SET @is_overlapping_absence = (SELECT COUNT(*) FROM nieobecnosci WHERE pracownik_id = NEW.pracownik_id AND koniec >= NEW.poczatek AND poczatek <= NEW.poczatek);
-    IF @is_overlapping_absence > 0 THEN
+    SET is_overlapping_absence = (SELECT COUNT(*) FROM nieobecnosci WHERE pracownik_id != OLD.pracownik_id AND pracownik_id = NEW.pracownik_id AND koniec >= NEW.poczatek AND poczatek <= NEW.poczatek);
+    IF is_overlapping_absence > 0 THEN
     	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: nie można dodać nieobecności dla kogoś kto już jest nieobecny';
     END IF;
 END;
@@ -30,15 +30,27 @@ END;
 CREATE OR REPLACE TRIGGER insert_zastepstwo
 BEFORE INSERT ON zastepstwo FOR EACH ROW
 BEGIN
+    DECLARE nieob_pocz DATE;
+    DECLARE nieob_kon DATE;
     IF NEW.poczatek >= NEW.koniec THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: poczatek musi być przed koniec';
+    END IF;
+    SELECT poczatek, koniec INTO nieob_pocz, nieob_kon FROM nieobecnosci WHERE id = NEW.nieobecnosci_id;
+    IF NEW.poczatek < nieob_pocz OR NEW.koniec > nieob_kon THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: zastępstwo musi być w ramach czasowych nieobecności';
     END IF;
 END;
 CREATE OR REPLACE TRIGGER update_zastepstwo
 BEFORE UPDATE ON zastepstwo FOR EACH ROW
 BEGIN
+    DECLARE nieob_pocz DATE;
+    DECLARE nieob_kon DATE;
     IF NEW.poczatek >= NEW.koniec THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: poczatek musi być przed koniec';
+    END IF;
+    SELECT poczatek, koniec INTO nieob_pocz, nieob_kon FROM nieobecnosci WHERE id = NEW.nieobecnosci_id;
+    IF NEW.poczatek < nieob_pocz OR NEW.koniec > nieob_kon THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: zastępstwo musi być w ramach czasowych nieobecności';
     END IF;
 END;
 
@@ -71,8 +83,8 @@ CREATE OR REPLACE TRIGGER insert_zarzad
 BEFORE INSERT ON zarzad FOR EACH ROW 
 BEGIN
 	DECLARE has_superior INT;
-   	SET @has_superior = (SELECT COUNT(*) FROM pracownik WHERE pracownik.id = NEW.pracownik_id AND pracownik.pracownik_id IS NOT NULL);
-   	IF @has_superior > 0 THEN
+   	SET has_superior = (SELECT COUNT(*) FROM pracownik WHERE pracownik.id = NEW.pracownik_id AND pracownik.pracownik_id IS NOT NULL);
+   	IF has_superior > 0 THEN
     	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: Członek zarządu nie może mieć przełożonego!';
     END IF;
 END;
@@ -80,8 +92,8 @@ CREATE OR REPLACE TRIGGER update_zarzad
 BEFORE UPDATE ON zarzad FOR EACH ROW 
 BEGIN
 	DECLARE has_superior INT;
-   	SET @has_superior = (SELECT COUNT(*) FROM pracownik WHERE pracownik.id = NEW.pracownik_id AND pracownik.pracownik_id IS NOT NULL);
-   	IF @has_superior > 0 THEN
+   	SET has_superior = (SELECT COUNT(*) FROM pracownik WHERE pracownik.id = NEW.pracownik_id AND pracownik.pracownik_id IS NOT NULL);
+   	IF has_superior > 0 THEN
     	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: Członek zarządu nie może mieć przełożonego!';
     END IF;
 END;
@@ -119,14 +131,14 @@ END;
 CREATE OR REPLACE PROCEDURE CheckManagers(IN kierownik_id INT)
 BEGIN
 	DECLARE is_manager_of_other_thing INT;
-   	SET @is_manager_of_other_thing = (
+   	SET is_manager_of_other_thing = (
         SELECT COUNT(*) FROM 
         	(SELECT id FROM grupa WHERE kierownik_id = grupa.kierownik_id
         	UNION ALL
         	SELECT id FROM dzial WHERE kierownik_id = dzial.kierownik_id
         	UNION ALL
         	SELECT id FROM zespol WHERE kierownik_id = zespol.kierownik_id) temp);
-   	IF @is_manager_of_other_thing > 0 THEN
+   	IF is_manager_of_other_thing > 0 THEN
     	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: Nie można być kierownikiem kilku jednostek jednocześnie!';
     END IF;
 END;

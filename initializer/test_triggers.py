@@ -1,5 +1,6 @@
 import pymysql
 from app.connection import TEST_CONN
+import datetime
 
 DATA_SIZE = 1000
 
@@ -129,11 +130,97 @@ def test_insert_zespol():
 
 def test_update_zespol():
     with TEST_CONN.cursor() as cursor:
+        # próba przypisania roli lidera zespołu liderowi grupy
         manager_of_other_unit = get_unit_superior_id(cursor, "grupa", "LIMIT 1")
         sql = "UPDATE zespol SET kierownik_id = {} LIMIT 1".format(manager_of_other_unit)
         sql_and_assert(cursor, sql, False)
+        # przypisanie roli lidera zespołu liderowi grupy
         normal_employee = get_emp_id(cursor, "ORDER BY ID DESC LIMIT 1")    # może działać niepoprawnie jeśli generator nie będzie
                                                                             # przydzielał pracowników w kolejności
         sql = "UPDATE zespol SET kierownik_id = {} LIMIT 1".format(normal_employee)
         sql_and_assert(cursor, sql, True)
         TEST_CONN.rollback()
+
+def test_insert_nieobecnosc():
+    with TEST_CONN.cursor() as cursor:
+        # próba dodania nieobecności z nieprawidłowym początkiem i końcem
+        sql = "SELECT pracownik_kogo FROM slownik_zastepstw LIMIT 1"
+        cursor.execute(sql)
+        emp_id = cursor.fetchone()[0]
+        start = "2020-05-18"
+        end = "2020-04-18"
+        sql = "INSERT INTO nieobecnosci (poczatek, koniec, pracownik_id) VALUES('{}', '{}', {})".format(start, end, emp_id)
+        sql_and_assert(cursor, sql, False)
+        # próba dodania nieobecności, które pokrywa się już z istniejąca dla danego pracownika
+        sql = "SELECT poczatek, koniec, pracownik_id FROM nieobecnosci LIMIT 1";
+        cursor.execute(sql)
+        start, end, emp_id = cursor.fetchone()
+        sql = "INSERT INTO nieobecnosci (poczatek, koniec, pracownik_id) VALUES('{}', '{}', {})".format(start, end, emp_id)
+        sql_and_assert(cursor, sql, False)
+        print(type(start))
+        # prawidłowe dodanie
+        sql = "SELECT id FROM pracownik WHERE id NOT IN (SELECT pracownik_id FROM nieobecnosci)"
+        cursor.execute(sql)
+        emp_id = cursor.fetchone()[0]
+        print(emp_id)
+        sql = "INSERT INTO nieobecnosci (poczatek, koniec, pracownik_id) VALUES('{}', '{}', {})".format(start, end, emp_id)
+        sql_and_assert(cursor, sql, True)
+
+def test_update_nieobecnosc():
+    with TEST_CONN.cursor() as cursor:
+        # próba modyfikacji nieobecności ustawiając błędne ramy czasowe
+        sql = "SELECT pracownik_kogo FROM slownik_zastepstw LIMIT 1"
+        cursor.execute(sql)
+        emp_id = cursor.fetchone()[0]
+        start = "2020-05-18"
+        end = "2020-04-18"
+        sql = "UPDATE nieobecnosci SET poczatek = '{}', koniec = '{}' LIMIT 1".format(start, end)
+        sql_and_assert(cursor, sql, False)
+        # prawidłowa modyfikacja
+        start = "2020-05-18"
+        end = "2020-06-18"
+        sql = "UPDATE nieobecnosci SET poczatek = '{}', koniec = '{}' WHERE pracownik_id = {}".format(start, end, emp_id)
+        sql_and_assert(cursor, sql, True)
+
+def test_insert_zastepstwo():
+    with TEST_CONN.cursor() as cursor:
+        # koniec przed początkiem
+        sql = "SELECT id, poczatek, koniec, pracownik_id FROM nieobecnosci LIMIT 1"
+        cursor.execute(sql)
+        abs_id, start, end, emp_id = cursor.fetchone()
+        sql = "SELECT id FROM slownik_zastepstw WHERE pracownik_kogo = {}".format(emp_id)
+        cursor.execute(sql)
+        sub_id = cursor.fetchone()[0]
+        sql = "INSERT INTO zastepstwo (poczatek, koniec, nieobecnosci_id, slowzast_id) VALUES ('{}', '{}', {}, {})".format(end, start, abs_id, sub_id)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        start = start + datetime.timedelta(days=1)
+        sql = "INSERT INTO zastepstwo (poczatek, koniec, nieobecnosci_id, slowzast_id) VALUES ('{}', '{}', {}, {})".format(start, end, abs_id, sub_id)
+        sql_and_assert(cursor, sql, True)
+        # zastępstwo poza ramami czasowymi
+        start = start - datetime.timedelta(days=1)
+        end = end + datetime.timedelta(days=1)
+        sql = "INSERT INTO zastepstwo (poczatek, koniec, nieobecnosci_id, slowzast_id) VALUES ('{}', '{}', {}, {})".format(start, end, abs_id, sub_id)
+        sql_and_assert(cursor, sql, False)
+
+def test_update_zastepstwo():
+    with TEST_CONN.cursor() as cursor:
+        # koniec przed początkiem
+        sql = "SELECT poczatek, koniec FROM nieobecnosci WHERE id = 1"
+        cursor.execute(sql)
+        start, end = cursor.fetchone()
+        sql = "UPDATE zastepstwo SET poczatek = '{}', koniec = '{}' WHERE nieobecnosci_id = 1".format(end, start)
+        sql_and_assert(cursor, sql, False)
+        # zastępstwo poza ramami czasowymi
+        start = start - datetime.timedelta(days=1)
+        end = end + datetime.timedelta(days=1)
+        sql = "UPDATE zastepstwo SET poczatek = '{}', koniec = '{}' WHERE nieobecnosci_id = 1".format(start, end)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "SELECT poczatek, koniec FROM nieobecnosci WHERE id = 1"
+        cursor.execute(sql)
+        start, end = cursor.fetchone()
+        if (start != end):
+            start = start + datetime.timedelta(days=1)
+        sql = "UPDATE zastepstwo SET poczatek = '{}', koniec = '{}' WHERE nieobecnosci_id = 1".format(start, end)
+        sql_and_assert(cursor, sql, True)
