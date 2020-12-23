@@ -224,3 +224,78 @@ def test_update_zastepstwo():
             start = start + datetime.timedelta(days=1)
         sql = "UPDATE zastepstwo SET poczatek = '{}', koniec = '{}' WHERE nieobecnosci_id = 1".format(start, end)
         sql_and_assert(cursor, sql, True)
+
+def test_insert_zakres_obowiazkow():
+    with TEST_CONN.cursor() as cursor:
+        # koniec przed początkiem
+        early = "2020-04-18"
+        late = "2020-05-18"
+        sql = "INSERT INTO zakres_obowiazkow(opis_obowiazku, data_dodania, termin_wykonania, pracownik_id) VALUES ('TEST', '{}', '{}', 1)".format(late, early)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "INSERT INTO zakres_obowiazkow(opis_obowiazku, data_dodania, termin_wykonania, pracownik_id) VALUES ('TEST', '{}', '{}', 1)".format(early, late)
+        sql_and_assert(cursor, sql, True)
+
+def test_update_zakres_obowiazkow():
+    with TEST_CONN.cursor() as cursor:
+        # koniec przed początkiem
+        early = "2020-04-18"
+        late = "2020-05-18"
+        sql = "UPDATE zakres_obowiazkow SET data_dodania = '{}', termin_wykonania = '{}' WHERE id = 1".format(late, early)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "UPDATE zakres_obowiazkow SET data_dodania = '{}', termin_wykonania = '{}' WHERE id = 1".format(early, late)
+        sql_and_assert(cursor, sql, True)
+
+def test_new_password_different():
+    with TEST_CONN.cursor() as cursor:
+        sql = "SELECT haslo FROM konto_uzytkownika WHERE id = 1"
+        cursor.execute(sql)
+        passwd = cursor.fetchone()[0]
+        # to samo haslo
+        sql = "UPDATE konto_uzytkownika SET haslo = '{}' WHERE id = 1".format(passwd)
+        sql_and_assert(cursor, sql, False)
+        # inne haslo
+        sql = "UPDATE konto_uzytkownika SET haslo = '{}' WHERE id = 1".format('__Test__')
+        sql_and_assert(cursor, sql, True)
+
+def test_insert_substitute_different():
+    with TEST_CONN.cursor() as cursor:
+        # ten sam zastępujacy co zastepowany
+        sql = "INSERT INTO slownik_zastepstw(pracownik_kto, pracownik_kogo) VALUES ({}, {})".format(1, 1)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "INSERT INTO slownik_zastepstw(pracownik_kto, pracownik_kogo) VALUES ({}, {})".format(1, 2)
+        sql_and_assert(cursor, sql, True)
+
+def test_update_substitute_different():
+    with TEST_CONN.cursor() as cursor:
+        # ten sam zastępujacy co zastepowany
+        sql = "UPDATE slownik_zastepstw SET pracownik_kto = {}, pracownik_kogo = {} WHERE id = 1".format(1, 1)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "UPDATE slownik_zastepstw SET pracownik_kto = {}, pracownik_kogo = {} WHERE id = 1".format(1, 2)
+        sql_and_assert(cursor, sql, True)
+
+def test_insert_superior_different():
+    with TEST_CONN.cursor() as cursor:
+        sql = "INSERT INTO konto_uzytkownika(nazwa_uzytkownika, haslo) VALUES ('JunitTester11', 'xdxdxdxdxd')"
+        cursor.execute(sql)
+        sql = "SELECT id FROM konto_uzytkownika ORDER BY ID DESC LIMIT 1"
+        cursor.execute(sql)
+        new_id = cursor.fetchone()[0]
+        # przełożony samego siebie
+        sql = "INSERT INTO pracownik(id, imie, nazwisko, pracownik_id, pesel, email, numer_telefonu, konto_uzytkownika_id) VALUES ({}, '{}', '{}', {}, '{}', '{}', '{}', {})".format(99999, "Junit", "Tester", 99999, "1049710247", "e.mail@gmail.com","111222333", new_id)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "INSERT INTO pracownik(id, imie, nazwisko, pracownik_id, pesel, email, numer_telefonu, konto_uzytkownika_id) VALUES ({}, '{}', '{}', {}, '{}', '{}', '{}', {})".format(99999, "Junit", "Tester", 1, "1049710247", "e.mail@gmail.com","111222333", new_id)
+        sql_and_assert(cursor, sql, True)
+
+def test_update_superior_different():
+    with TEST_CONN.cursor() as cursor:
+        # przełożony samego siebie
+        sql = "UPDATE pracownik SET pracownik_id = {} WHERE id = 1".format(1)
+        sql_and_assert(cursor, sql, False)
+        # poprawne
+        sql = "UPDATE pracownik SET pracownik_id = {} WHERE id = 1".format(99999)
+        sql_and_assert(cursor, sql, True)
