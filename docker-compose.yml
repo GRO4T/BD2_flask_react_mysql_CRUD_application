@@ -3,7 +3,7 @@ services:
   backend:
     depends_on:
       - db
-    build: backend
+    build: .
     ports:
       - '5000:80'
     tmpfs:

@@ -1,6 +1,5 @@
 from app import app
 
-@app.route('/')
-@app.route('/index')
+@app.route('/api/test')
 def index():
-    return "Hello, World!"
+    return { 'status': 'OK' }
