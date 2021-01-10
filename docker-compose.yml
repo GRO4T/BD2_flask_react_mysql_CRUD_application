@@ -12,6 +12,7 @@ services:
       - DB_USERNAME=${MARIADB_USERNAME}
       - DB_PASSWORD=${MARIADB_PASSWORD}
       - DB_DATABASE=${MARIADB_DATABASE}
+      - DB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
   initializer:
     depends_on:
       - db

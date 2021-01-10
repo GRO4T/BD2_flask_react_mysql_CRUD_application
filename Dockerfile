@@ -9,5 +9,7 @@ COPY ./frontend /app
 RUN npm run build
 
 FROM tiangolo/uwsgi-nginx-flask:python3.8
+COPY backend/requirements.txt /app
+RUN python3 -m pip install -r /app/requirements.txt
 COPY backend/app /app
 COPY --from=build /app/build /app/static
