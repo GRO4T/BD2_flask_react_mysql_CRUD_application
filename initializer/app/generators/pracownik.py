@@ -35,10 +35,11 @@ def generator():
                             f'{employee["pesel"][0:2]}{email_domains[randint(0, len(email_domains)-1)]}'
         employee["numer_telefonu"] = _generate_mobile()
 
-        password = ''.join(choices(string.ascii_lowercase + string.digits, k=randint(8, 32)))
+        # password = ''.join(choices(string.ascii_lowercase + string.digits, k=randint(8, 32)))
+        password =employee["imie"][0].lower() + employee["nazwisko"].lower() + employee["pesel"][0:2]
         account = {
             "nazwa_uzytkownika": employee["imie"][0].lower() + employee["nazwisko"].lower() + employee["pesel"][0:2],
-            "haslo": hashlib.md5(password.encode("utf-8")).hexdigest()
+            "haslo": hashlib.sha256(password.encode("utf-8")).hexdigest()
         }
         employee['konto_uzytkownika_id'] = account_id
 

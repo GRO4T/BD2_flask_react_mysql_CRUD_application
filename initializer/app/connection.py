@@ -7,7 +7,8 @@ def open_connection():
     password = os.environ["DB_ROOT_PASSWORD"]
     host = "db"
     database = os.environ["DB_DATABASE"]
-    return pymysql.connect(host, 'root', password, database, client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS)
+    #return pymysql.connect(host, 'root', password, database, client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS)
+    return pymysql.connect(host=host, user='root', password=password, database=database, client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS)
 
 def try_connect():
     try:
