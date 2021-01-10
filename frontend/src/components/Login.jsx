@@ -15,21 +15,33 @@ function Login(props) {
 
   const [msg, setMsg] = useState("");
 
-  // useEffect(() => {
-  //   fetch(`${apiUrl}/api/getDzial`)
-  //     .then(res => res.json())
-  //     .then(body => setDepts(body))
-  //     .catch(err => setMsg("Network error"));
-  // }, []);
+  useEffect(() => {
+    fetch(`${apiUrl}/api/getDzial`)
+      .then(res => res.json())
+      .then(body => true)
+      .catch(err => setMsg("Network error"));
+  }, []);
 
   const handleSubmit = e => {
+    axios.post(`${apiUrl}/api/auth`, {
+      old: form.user,
+      new: form.password
+    })
+      .then(res => {
+        if (res.status === 200) {
+          setUser({
 
+          });
+        }
+      })
+      .catch(err => {
+        setMsg("Zła nazwa użytkownika lub hasło");
+      });
     e.preventDefault();
   }
 
   return (
     <>
-
       {user.username &&
         <Redirect to="/" />
       }
