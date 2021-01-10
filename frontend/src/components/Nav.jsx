@@ -20,10 +20,10 @@ function Nav() {
                   <li className="nav-item">
                     <NavLink exact to="/dodajZastepstwo" className="nav-link text-light">Dodaj zastępstwo</NavLink>
                   </li>
-                  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                  <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+                    <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                     </ul>
-                    <form class="form-inline my-2 my-lg-0">
+                    <form className="form-inline my-2 my-lg-0">
                       <span className="text-white font-weight-bold">{user.username}</span>
                       <li className="nav-item">
                         <button className="btn btn-link text-light" onClick={() => setUser(o => ({ ...o, username: "" }))}>Wyloguj</button>
@@ -34,10 +34,10 @@ function Nav() {
               }
               {!user.username &&
                 <>
-                  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                  <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+                    <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                     </ul>
-                    <form class="form-inline my-2 my-lg-0">
+                    <form className="form-inline my-2 my-lg-0">
                       <li className="nav-item">
                         <NavLink exact to="/login" className="nav-link text-light">Zaloguj</NavLink>
                       </li>

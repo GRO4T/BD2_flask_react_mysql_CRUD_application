@@ -16,9 +16,12 @@ function Login(props) {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/getDzial`)
-      .then(res => res.json())
-      .then(body => true)
+    fetch(`${apiUrl}/api/test`)
+      // .then(res => {
+      //   if(res.status != 200){
+      //     setMsg("Network error");
+      //   }
+      // })
       .catch(err => setMsg("Network error"));
   }, []);
 
@@ -30,8 +33,11 @@ function Login(props) {
       .then(res => {
         if (res.status === 200) {
           setUser({
-
+            username: form.user,
+            token: res.body.token
           });
+        } else{
+          setMsg("Zła nazwa użytkownika lub hasło");
         }
       })
       .catch(err => {
