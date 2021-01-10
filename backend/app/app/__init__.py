@@ -10,5 +10,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+from sqlalchemy.orm import sessionmaker
+
+Session = sessionmaker(bind=db.engine)
+session = Session()
 
 from app import routes
