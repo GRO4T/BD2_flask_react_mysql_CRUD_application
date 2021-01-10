@@ -5,6 +5,19 @@ from app.orm import Dzial, Pracownik
 from flask import jsonify
 from pydantic import BaseModel
 from pydantic_sqlalchemy import sqlalchemy_to_pydantic
+from flask_jwt import JWT, jwt_required, current_identity
+from werkzeug.security import safe_str_cmp
+import hashlib
+
+def auth(username, password):
+    user = session.query(KontoUzytkownika).filter_by(nazwa_uzytkownika=username).first()
+    if user is not None and user.haslo == hashlib.sha256(password.encode()).hexdigest():
+        return user
+def identity(payload):
+    user_id = payload['identity']
+    return session.query(KontoUzytkownika).filter_by(id=user_id).first()
+
+jwt = JWT(app, auth, identity)
 
 PydanticPracownik = sqlalchemy_to_pydantic(Pracownik)
 
@@ -21,3 +34,8 @@ def dzial():
 @app.route('/api/pracownik')
 def pracownik():
     return jsonify([PydanticPracownik.from_orm(prac).json() for prac in session.query(Pracownik).all()])
+
+@app.route('/api/auth_test')
+@jwt_required()
+def auth_test():
+    return "%s" % current_identity
