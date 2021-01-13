@@ -36,9 +36,13 @@ def department():
 def employee():
     return get_all_employees()
 
-@app.route('/api/employee/<id>')
+@app.route('/api/employee/by-id/<id>')
 def employee_by_id(id):
     return get_employee_by_id(id)
+
+@app.route('/api/employee/by-username/<username>')
+def employee_by_username(username):
+    return get_employee_by_username(username)
 
 @app.route('/api/substitution/by-substitute/<id>')
 def subs_by_substitute(id):

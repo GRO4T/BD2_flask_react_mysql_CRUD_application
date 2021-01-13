@@ -12,6 +12,12 @@ def get_all_employees():
 def get_employee_by_id(id):
     return pack_in_json(session.query(orm.Pracownik).filter_by(id=id), schemas.Pracownik.from_orm)
 
+def get_employee_by_username(username):
+    return pack_in_json(
+        session.query(orm.Pracownik).join(orm.Pracownik.konto_uzytkownika).filter_by(nazwa_uzytkownika=username),
+        schemas.Pracownik.from_orm
+    )
+
 def get_all_departments():
     return pack_in_json(session.query(orm.Dzial), schemas.Dzial.from_orm)
 
