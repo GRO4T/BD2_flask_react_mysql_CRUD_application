@@ -28,11 +28,25 @@ def auth_test():
     return "%s" % current_identity
 
 
-@app.route('/api/dzial')
-def dzial():
+@app.route('/api/department')
+def department():
     return get_all_departments()
 
-@app.route('/api/pracownik')
-def pracownik():
+@app.route('/api/employee')
+def employee():
     return get_all_employees()
+
+@app.route('/api/employee/<id>')
+def employee_by_id(id):
+    return get_employee_by_id(id)
+
+@app.route('/api/substitution/by-substitute/<id>')
+def subs_by_substitute(id):
+    return get_all_subs_for_emp(id)
+
+@app.route('/api/absence/by-emp-id/<id>')
+def abs_by_emp_id(id):
+    return get_all_abs_for_emp(id)
+
+
 
