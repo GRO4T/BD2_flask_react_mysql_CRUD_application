@@ -17,18 +17,18 @@ function Login(props) {
 
   useEffect(() => {
     fetch(`${apiUrl}/api/test`)
-      // .then(res => {
-      //   if(res.status != 200){
-      //     setMsg("Network error");
-      //   }
-      // })
+      .then(res => {
+        if (res.status !== 200) {
+          setMsg("Network error");
+        }
+      })
       .catch(err => setMsg("Network error"));
   }, []);
 
   const handleSubmit = e => {
     axios.post(`${apiUrl}/api/auth`, {
-      old: form.user,
-      new: form.password
+      username: form.user,
+      password: form.password
     })
       .then(res => {
         if (res.status === 200) {
@@ -36,7 +36,7 @@ function Login(props) {
             username: form.user,
             token: res.body.token
           });
-        } else{
+        } else {
           setMsg("Zła nazwa użytkownika lub hasło");
         }
       })
@@ -59,11 +59,11 @@ function Login(props) {
       <form className="mx-auto col-sm-6" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="exampleInputEmail1">Użytkownik</label>
-          <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.user} onChange={e => setForm(o => ({...o, user: e.target.value}))} />
+          <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.user} onChange={e => setForm(o => ({ ...o, user: e.target.value }))} />
         </div>
-        <div class="form-group">
+        <div className="form-group">
           <label htmlFor="exampleInputPassword1">Hasło</label>
-          <input type="password" className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm(o => ({...o, password: e.target.value}))} />
+          <input type="password" className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm(o => ({ ...o, password: e.target.value }))} />
         </div>
         <button type="submit" className="btn btn-primary">Zaloguj</button>
       </form>
