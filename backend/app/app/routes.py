@@ -8,6 +8,7 @@ from pydantic_sqlalchemy import sqlalchemy_to_pydantic
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
 import hashlib
+from app.orm import *
 
 def auth(username, password):
     user = session.query(KontoUzytkownika).filter_by(nazwa_uzytkownika=username).first()

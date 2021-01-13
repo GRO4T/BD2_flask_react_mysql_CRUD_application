@@ -34,14 +34,14 @@ function Login(props) {
         if (res.status === 200) {
           setUser({
             username: form.user,
-            token: res.body.token
+            token: res.access_token
           });
         } else {
           setMsg("Zła nazwa użytkownika lub hasło");
         }
       })
       .catch(err => {
-        setMsg("Zła nazwa użytkownika lub hasło");
+        setMsg("Internal error (dev needed)");
       });
     e.preventDefault();
   }

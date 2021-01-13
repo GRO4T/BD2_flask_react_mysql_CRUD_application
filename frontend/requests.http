@@ -6,6 +6,6 @@ POST http://localhost:5000/api/auth HTTP/1.1
 content-type: application/json
 
 {
-    "username": "znwozor98",
-    "password": "znwozor98"
+    "username": "jbogdański83",
+    "password": "jbogdański83"
 }
