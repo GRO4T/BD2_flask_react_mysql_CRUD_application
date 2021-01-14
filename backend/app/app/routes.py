@@ -1,11 +1,17 @@
 from app import app, session
+from app.orm import KontoUzytkownika
+import app.crud as crud
+import app.schemas as schemas
+from app.request_models import CreateAbsenceRequest
+from flask_pydantic import validate
+from flask import request
+from http import HTTPStatus
 
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
 import hashlib
 from app.orm import *
 
-from app.crud import *
 
 @app.route('/api/test')
 def index():
@@ -29,29 +35,45 @@ def auth_test():
     return "%s" % current_identity
 
 
-@app.route('/api/department')
+@app.route('/api/department', methods=['GET'])
 def department():
-    return get_all_departments()
+    return crud.get_all_departments()
 
-@app.route('/api/employee')
+@app.route('/api/employee', methods=['GET'])
 def employee():
-    return get_all_employees()
+    return crud.get_all_employees()
 
-@app.route('/api/employee/by-id/<id>')
+@app.route('/api/employee/by-id/<id>', methods=['GET'])
 def employee_by_id(id):
-    return get_employee_by_id(id)
+    return crud.get_employee_by_id(id)
 
-@app.route('/api/employee/by-username/<username>')
+@app.route('/api/employee/by-username/<username>', methods=['GET'])
 def employee_by_username(username):
-    return get_employee_by_username(username)
+    return crud.get_employee_by_username(username)
 
-@app.route('/api/substitution/by-substitute/<id>')
+@app.route('/api/substitution/by-substitute/<id>', methods=['GET'])
 def subs_by_substitute(id):
-    return get_all_subs_for_emp(id)
+    return crud.get_all_subs_for_emp(id)
 
-@app.route('/api/absence/by-emp-id/<id>')
+@app.route('/api/absence/by-emp-id/<id>', methods=['GET'])
 def abs_by_emp_id(id):
-    return get_all_abs_for_emp(id)
+    return crud.get_all_abs_for_emp(id)
 
+@app.route('/api/employee/by-subordinate/<id>', methods=['GET'])
+def employee_by_subordinate(id):
+    return crud.get_employee_by_subordinate(id)
 
+@app.route('/api/absence', methods=['POST'])
+@validate(body=CreateAbsenceRequest)
+def add_absence():
+    try:
+        crud.insert_absence(request.body_params)
+    except:
+        return {}, HTTPStatus.CONFLICT
+    return {}, HTTPStatus.OK
+
+@app.route('/api/absence/<id>', methods=['DELETE'])
+def delete_absence(id):
+    affected_rows = crud.delete_absence(id)
+    return {"affected rows": affected_rows}, HTTPStatus.OK
 
