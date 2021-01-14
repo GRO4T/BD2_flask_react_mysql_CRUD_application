@@ -40,6 +40,12 @@ def get_employee_by_subordinate(subordinate_id):
     query_result = session.query(orm.Pracownik).filter_by(id=superior_id)
     return pack_in_json(query_result, schemas.Pracownik.from_orm)
 
+def get_employee_by_superior(superior_id):
+    return pack_in_json(
+        session.query(orm.Pracownik).filter_by(pracownik_id=superior_id).all(),
+        schemas.Pracownik.from_orm
+    )
+
 def insert_absence(request: CreateAbsenceRequest):
     absence = orm.Nieobecnosci(poczatek=request.poczatek, koniec=request.koniec, pracownik_id=request.id)
     try:

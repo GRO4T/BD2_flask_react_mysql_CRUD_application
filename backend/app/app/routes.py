@@ -63,6 +63,10 @@ def abs_by_emp_id(id):
 def employee_by_subordinate(id):
     return crud.get_employee_by_subordinate(id)
 
+@app.route('/api/employee/by-superior/<id>', methods=['GET'])
+def employee_by_superior(id):
+    return crud.get_employee_by_superior(id)
+
 @app.route('/api/absence', methods=['POST'])
 @validate(body=CreateAbsenceRequest)
 def add_absence():
