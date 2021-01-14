@@ -29,25 +29,35 @@ def generate_emp_competencies(employees):
 def generate_absences_and_substitiutions(employees):
     abs_and_subs = []
     num_of_emps = len(employees)
-    for i in range(num_of_emps // 2):
-        month = random.randint(3, 11)
-        start = datetime.datetime(2020, month, random.randint(1, 30))
-        end = datetime.datetime(2020, month+1, random.randint(1, 30))
-        abs_and_subs.append([("nieobecnosci", {
-            "poczatek": start,
-            "koniec": end,
-            "pracownik_id": i+1
-        })])
+    count = 0
+    for i in range(num_of_emps):
         abs_and_subs.append([("slownik_zastepstw", {
             "pracownik_kto": num_of_emps - i,
             "pracownik_kogo": i+1
         })])
-        abs_and_subs.append([("zastepstwo", {
-            "poczatek": start,
-            "koniec": end,
-            "nieobecnosci_id": i+1,
-            "slowzast_id": i+1
-        })])
+        r = random.randint(1, 11)
+        for j in range(r):
+            count += 1
+            f = random.randint(0, 1)
+            if f == 1:
+                month = 1+j
+                start = datetime.datetime(2021, month, random.randint(16, 28))
+                end = datetime.datetime(2021, month+1, random.randint(1, 15))
+            else:
+                month = 1+j
+                start = datetime.datetime(2020, month, random.randint(16, 28))
+                end = datetime.datetime(2020, month+1, random.randint(1, 15))
+            abs_and_subs.append([("nieobecnosci", {
+                "poczatek": start,
+                "koniec": end,
+                "pracownik_id": i+1
+            })])
+            abs_and_subs.append([("zastepstwo", {
+                "poczatek": start,
+                "koniec": end,
+                "nieobecnosci_id": count,
+                "slowzast_id": i+1
+            })])
     return abs_and_subs
 
 def generate_responsibilities(employees):

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import apiUrl from '../api-url';
 import axios from 'axios';
 import UserContext from '../contexts/UserContext';
@@ -41,14 +41,14 @@ function Login(props) {
         }
       })
       .catch(err => {
-        setMsg("Internal error (dev needed)");
+        setMsg("Zła nazwa użytkownika lub hasło");
       });
     e.preventDefault();
   }
 
   return (
     <>
-      {user.username &&
+      {user.id &&
         <Redirect to="/" />
       }
       {msg &&

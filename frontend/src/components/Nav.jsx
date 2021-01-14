@@ -12,7 +12,7 @@ function Nav() {
           <NavLink exact to="/" className="navbar-brand">Korpobaza</NavLink>
           <div className="navbar-collapse d-sm-inline-flex flex-sm-row-reverse">
             <ul className="navbar-nav flex-grow-1">
-              {user.username &&
+              {user.id &&
                 <>
                   <li className="nav-item">
                     <NavLink exact to="/dodajNieobecnosc" className="nav-link text-light">Dodaj nieobecność</NavLink>
@@ -26,13 +26,13 @@ function Nav() {
                     <form className="form-inline my-2 my-lg-0">
                       <span className="text-white font-weight-bold">{user.username}</span>
                       <li className="nav-item">
-                        <button className="btn btn-link text-light" onClick={() => setUser(o => ({ ...o, username: "" }))}>Wyloguj</button>
+                        <button className="btn btn-link text-light" onClick={() => setUser({})}>Wyloguj</button>
                       </li>
                     </form>
                   </div>
                 </>
               }
-              {!user.username &&
+              {!user.id &&
                 <>
                   <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
                     <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
