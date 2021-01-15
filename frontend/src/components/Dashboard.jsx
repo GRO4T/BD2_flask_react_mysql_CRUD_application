@@ -45,7 +45,7 @@ function Dashboard() {
       const conv = subFetch.map(a => ({
         from: new Date(a.poczatek.substring(5)),
         to: new Date(a.koniec.substring(5)),
-        for: a.pracownik_kogo
+        for: `${a.imie} ${a.nazwisko}`
       }));
       const date = new Date();
       const yest = date.setDate(date.getDate() - 1);

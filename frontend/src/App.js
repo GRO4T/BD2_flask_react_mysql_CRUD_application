@@ -3,6 +3,7 @@ import Index from './components/Index';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import DodajZastepstwo from './components/DodajZastepstwo';
+import DodajNieobecnosc from './components/DodajNieobecnosc';
 import UserContext from './contexts/UserContext';
 import apiUrl from './api-url';
 
@@ -40,6 +41,9 @@ function App() {
                   ? <Dashboard />
                   : <Index />
                 }
+              </Route>
+              <Route exact path="/dodajNieobecnosc">
+                <DodajNieobecnosc />
               </Route>
               <Route exact path="/dodajZastepstwo">
                 <DodajZastepstwo />
