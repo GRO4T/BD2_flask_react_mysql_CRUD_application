@@ -67,6 +67,11 @@ def add_substitution():
         return {}, HTTPStatus.CONFLICT
     return {}, HTTPStatus.OK
 
+@app.route('/api/substitution/<id>', methods=['DELETE'])
+def delete_substitution(id):
+    affected_rows = crud.delete_substitution(id)
+    return {"affected rows": affected_rows}, HTTPStatus.OK
+
 @app.route('/api/absence/by-emp-id/<id>', methods=['GET'])
 def abs_by_emp_id(id):
     return crud.get_all_abs_for_emp(id)

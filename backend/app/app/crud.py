@@ -122,3 +122,12 @@ def insert_substitution(request: CreateSubRequest):
     except:
         session.rollback()
         raise
+
+def delete_substitution(id):
+    del_rows = 0
+    try:
+        del_rows = session.query(orm.Zastepstwo).filter_by(id=id).delete()
+        session.commit()
+    except:
+        session.rollback()
+    return del_rows
