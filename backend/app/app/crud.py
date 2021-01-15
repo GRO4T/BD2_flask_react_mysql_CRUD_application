@@ -1,8 +1,10 @@
 from flask import jsonify
 import app.schemas as schemas
 import app.orm as orm
-from app.request_models import CreateAbsenceRequest
+from app.request_models import CreateAbsenceRequest, GetPresentTimePeriodRequest, CreateSubRequest
 from app import session
+from sqlalchemy import or_, and_
+from app.exception import NoEntryInSubDict
 
 def pack_in_json(query_result, convert_to_schema):
     return jsonify([convert_to_schema(res).dict() for res in query_result])
@@ -65,3 +67,58 @@ def delete_absence(id):
         session.rollback()
     return del_rows
 
+def get_all_subs_for_abs(abs_id):
+    return pack_in_json(
+        session.query(orm.Zastepstwo).filter_by(nieobecnosci_id=abs_id).all(),
+        schemas.Zastepstwo.from_orm
+    )
+
+def get_subordinate_abs_and_subs(superior_id):
+    response_data = []
+    suboridanates = session.query(orm.Pracownik).filter_by(pracownik_id=superior_id).all()
+    for suboridinate in suboridanates:
+        emp_data = schemas.Pracownik.from_orm(suboridinate).dict()
+        absences = session.query(orm.Nieobecnosci).filter_by(pracownik_id=suboridinate.id).all()
+        emp_data["absences"] =  [schemas.Nieobecnosci.from_orm(row).dict() for row in absences]
+        for i in range(len(absences)):
+            emp_data["absences"][i]["substitutions"] = [
+                schemas.Zastepstwo.from_orm(row).dict()
+                for row in session.query(orm.Zastepstwo).filter_by(nieobecnosci_id=absences[i].id).all()
+            ]
+        response_data.append(emp_data)
+    return jsonify(response_data)
+
+def get_subordinate_present_in_period(request: GetPresentTimePeriodRequest):
+    query_result = session.query(orm.Pracownik).\
+        join(orm.Nieobecnosci, orm.Nieobecnosci.pracownik_id == orm.Pracownik.id).\
+        filter(
+            and_(
+                or_(
+                    orm.Nieobecnosci.koniec < request.poczatek, orm.Nieobecnosci.poczatek > request.koniec
+                ),
+                orm.Pracownik.pracownik_id == request.id_przelozonego
+            )
+        ).all()
+    return pack_in_json(query_result, schemas.Pracownik.from_orm)
+
+def insert_substitution(request: CreateSubRequest):
+    absence = session.query(orm.Nieobecnosci).filter_by(id=request.id_nieobecnosci).one()
+    sub_dict = session.query(orm.SlownikZastepstw).filter(
+        and_(
+            orm.SlownikZastepstw.pracownik_kogo == absence.pracownik_id,
+            orm.SlownikZastepstw.pracownik_kto == request.id_pracownika
+        )
+    ).one_or_none()
+
+    if sub_dict is None:
+        raise NoEntryInSubDict()
+
+    sub = orm.Zastepstwo(
+        poczatek=absence.poczatek, koniec=absence.koniec, nieobecnosci_id=absence.id, slowzast_id=sub_dict.id
+    )
+    try:
+        session.add(sub)
+        session.commit()
+    except:
+        session.rollback()
+        raise

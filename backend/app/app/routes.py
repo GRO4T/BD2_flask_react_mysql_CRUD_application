@@ -2,7 +2,8 @@ from app import app, session
 from app.orm import KontoUzytkownika
 import app.crud as crud
 import app.schemas as schemas
-from app.request_models import CreateAbsenceRequest
+from app.request_models import CreateAbsenceRequest, GetPresentTimePeriodRequest, CreateSubRequest
+from app.exception import NoEntryInSubDict
 from flask_pydantic import validate
 from flask import request
 from http import HTTPStatus
@@ -54,6 +55,18 @@ def employee_by_username(username):
 def subs_by_substitute(id):
     return crud.get_all_subs_for_emp(id)
 
+@app.route('/api/substitution', methods=['POST'])
+@validate(body=CreateSubRequest)
+def add_substitution():
+    try:
+        crud.insert_substitution(request.body_params)
+    except NoEntryInSubDict as e:
+        return {"msg": str(e)}, HTTPStatus.CONFLICT
+    except Exception as e:
+        print(e)
+        return {}, HTTPStatus.CONFLICT
+    return {}, HTTPStatus.OK
+
 @app.route('/api/absence/by-emp-id/<id>', methods=['GET'])
 def abs_by_emp_id(id):
     return crud.get_all_abs_for_emp(id)
@@ -71,7 +84,8 @@ def employee_by_superior(id):
 def add_absence():
     try:
         crud.insert_absence(request.body_params)
-    except:
+    except Exception as e:
+        print(e)
         return {}, HTTPStatus.CONFLICT
     return {}, HTTPStatus.OK
 
@@ -80,3 +94,11 @@ def delete_absence(id):
     affected_rows = crud.delete_absence(id)
     return {"affected rows": affected_rows}, HTTPStatus.OK
 
+@app.route('/api/employee/<id>/subordinate-abs-subs', methods=['GET'])
+def subordinate_abs_and_subs(id):
+    return crud.get_subordinate_abs_and_subs(id)
+
+@app.route('/api/employee/present-timeperiod', methods=['GET'])
+@validate(body=GetPresentTimePeriodRequest)
+def subordinate_present():
+    return crud.get_subordinate_present_in_period(request.body_params)
