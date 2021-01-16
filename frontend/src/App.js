@@ -8,7 +8,7 @@ import UserContext from './contexts/UserContext';
 import apiUrl from './api-url';
 
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 function App() {
 
@@ -19,18 +19,18 @@ function App() {
   });
 
   useEffect(() => {
-    if(user.username){
+    if (user.username) {
       fetch(`${apiUrl}/api/employee/by-username/${user.username}`)
         .then(res => res.json())
-        .then(body => setUser(u => ({...u, id: body[0].id})));
-      }
+        .then(body => setUser(u => ({ ...u, id: body[0].id })));
+    }
   }, [user.username]);
 
   return (
-    <UserContext.Provider value={{user, setUser}}>
+    <UserContext.Provider value={{ user, setUser }}>
       <Router>
         <Nav />
-        {!user.id && 
+        {!user.id &&
           <Redirect to="/login" />
         }
         <div className="container">

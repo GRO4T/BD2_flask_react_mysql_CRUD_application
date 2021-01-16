@@ -30,28 +30,28 @@ function Dashboard() {
   }, [user.id]);
 
   useEffect(() => {
-      const conv = absFetch.map(a => ({
-        from: new Date(a.poczatek.substring(5)),
-        to: new Date(a.koniec.substring(5))
-      }));
-      const date = new Date();
-      const yest = date.setDate(date.getDate() - 1);
-      const filter = conv.filter(c => c.to >= yest);
-      filter.sort((a, b) => a.from - b.from);
-      setAbs(filter);
+    const conv = absFetch.map(a => ({
+      from: new Date(a.poczatek.substring(5)),
+      to: new Date(a.koniec.substring(5))
+    }));
+    const date = new Date();
+    const yest = date.setDate(date.getDate() - 1);
+    const filter = conv.filter(c => c.to >= yest);
+    filter.sort((a, b) => a.from - b.from);
+    setAbs(filter);
   }, [absFetch]);
 
   useEffect(() => {
-      const conv = subFetch.map(a => ({
-        from: new Date(a.poczatek.substring(5)),
-        to: new Date(a.koniec.substring(5)),
-        for: `${a.imie} ${a.nazwisko}`
-      }));
-      const date = new Date();
-      const yest = date.setDate(date.getDate() - 1);
-      const filter = conv.filter(c => c.to >= yest);
-      filter.sort((a, b) => a.from - b.from);
-      setSub(filter);
+    const conv = subFetch.map(a => ({
+      from: new Date(a.poczatek.substring(5)),
+      to: new Date(a.koniec.substring(5)),
+      for: `${a.imie} ${a.nazwisko}`
+    }));
+    const date = new Date();
+    const yest = date.setDate(date.getDate() - 1);
+    const filter = conv.filter(c => c.to >= yest);
+    filter.sort((a, b) => a.from - b.from);
+    setSub(filter);
   }, [subFetch]);
 
   return (
@@ -97,7 +97,7 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-              {sub.map(a => (
+                {sub.map(a => (
                   <tr key={a.from}>
                     <td>{a.from.toLocaleDateString('pl-PL')}</td>
                     <td>{a.to.toLocaleDateString('pl-PL')}</td>
