@@ -141,14 +141,14 @@ function DodajNieobecnosc(props) {
               <div className="row">
                 <div className="col-sm">
                   <div className="form-group mb-2">
-                    <label for="from" className="sr-only">Od</label>
+                    <label htmlFor="from" className="sr-only">Od</label>
                     <input type="date" className="form-control" id="from" value={absDate.from}
                       onChange={e => setAbsDate(o => ({ ...o, from: e.target.value }))} />
                   </div>
                 </div>
                 <div className="col-sm">
                   <div className="form-group mx-sm-3 mb-2">
-                    <label for="to" className="sr-only">Do</label>
+                    <label htmlFor="to" className="sr-only">Do</label>
                     <input type="date" className="form-control" id="to" value={absDate.to}
                       onChange={e => setAbsDate(o => ({ ...o, to: e.target.value }))} />
                   </div>

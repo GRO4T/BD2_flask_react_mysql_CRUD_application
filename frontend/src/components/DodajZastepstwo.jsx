@@ -1,45 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
 import apiUrl from '../api-url';
+import UserContext from '../contexts/UserContext';
 import axios from 'axios';
+import Zastepstwo from './Zastepstwo';
 
 function DodajZastepstwo(props) {
 
-    const [msg, setMsg] = useState("");
+  const { user } = React.useContext(UserContext);
 
-    const [depts, setDepts] = useState([]);
-    const [chosenDept, setChosenDept] = useState("");
+  const [msg, setMsg] = useState("");
+  const [abs, setAbs] = useState([]);
 
-    useEffect(() => {
-        fetch(`${apiUrl}/api/getDzial`)
-        .then(res => res.json())
-        .then(body => setDepts(body))
-        .catch(err => setMsg("Network error"));
-    }, []);
+  useEffect(() => {
+    fetchAbs();
+  }, []);
+
+  const fetchAbs = () => {
+    axios.get(`${apiUrl}/api/employee/${user.id}/subordinate-abs-subs`)
+      .then(res => {
+        if (!res.data.length) {
+          setMsg("Brak uprawnień lub brak nieobecności.");
+        } else {
+          const absf = res.data.reduce((acc, cur) => {
+            const name = `${cur.imie} ${cur.nazwisko}`;
+            const abse = cur.absences.map(a => ({
+              ...a,
+              name,
+              koniec: new Date(a.koniec.substring(5)),
+              poczatek: new Date(a.poczatek.substring(5))
+            }));
+            return [...acc, ...abse];
+          }, []);
+          const date = new Date();
+          const yest = date.setDate(date.getDate() - 1);
+          const filter = absf.filter(a => a.koniec >= yest);
+          filter.sort((a, b) => a.poczatek - b.poczatek);
+          setAbs(filter);
+        }
+      })
+      .catch(err => setMsg('Network error'));
+  };
 
   return (
     <>
-        {msg &&
-            <div className="alert alert-danger" role="alert">
-              {msg}
-            </div>
-        }
-        <h3>1. Wybierz dział</h3>
-        <hr/>
-        <div className="form-group row">
-        <label htmlFor="dzial" className="col-sm-2 col-form-label">Dział</label>
-        <div className="col-sm-4">
-          <select id="dzial" className="form-control" value={chosenDept.name}
-            onChange={event => setChosenDept({name: event.target.value, id: event.target.key})}>
-            {depts.map(d =>
-              <option value={d.name} key={d.id}>{d}</option>
-            )}
-          </select>
+      {msg &&
+        <div className="alert alert-danger" role="alert">
+          {msg}
         </div>
-      </div>
-        <h3>2. Wybierz pracownika i nieobecność</h3>
-        <hr/>
-        <h3>3. Wybierz zastępstwo</h3>
+      }
+      {abs.length > 0 &&
+        <>
+          <table className="table table-hover table-dark" style={{ tableLayout: "fixed" }}>
+            <thead>
+              <tr>
+                <th scope="col">Od</th>
+                <th scope="col">Do</th>
+                <th scope="col">Za</th>
+                <th scope="col">Kto</th>
+                <th scope="col">Akcja</th>
+              </tr>
+            </thead>
+            <tbody>
+              {abs.map(a => (
+                <Zastepstwo key={a.id} id={a.id} poczatek={a.poczatek} koniec={a.koniec} name={a.name} substitutions={a.substitutions} handleUpdate={fetchAbs} setMsg={setMsg} />
+              ))}
+            </tbody>
+          </table>
+        </>
+      }
     </>
   );
 }

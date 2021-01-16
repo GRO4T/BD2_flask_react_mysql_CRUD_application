@@ -104,7 +104,7 @@ def delete_absence(id):
 def subordinate_abs_and_subs(id):
     return crud.get_subordinate_abs_and_subs(id)
 
-@app.route('/api/employee/present-timeperiod', methods=['GET'])
+@app.route('/api/employee/present-timeperiod', methods=['POST'])
 @validate(body=GetPresentTimePeriodRequest)
 def subordinate_present():
     return crud.get_subordinate_present_in_period(request.body_params)
