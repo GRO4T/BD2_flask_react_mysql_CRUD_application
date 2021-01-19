@@ -1,7 +1,8 @@
 from flask import jsonify
 import app.schemas as schemas
 import app.orm as orm
-from app.request_models import CreateAbsenceRequest, GetPresentTimePeriodRequest, CreateSubRequest
+from app.request_models import CreateAbsenceRequest, GetPresentTimePeriodRequest, CreateSubRequest, GetAbleToSubstituteRequest, AddSubDictRequest
+from app.request_models import GetSkillsRequest
 from app import session
 from sqlalchemy import or_, and_
 from app.exception import NoEntryInSubDict
@@ -53,7 +54,8 @@ def insert_absence(request: CreateAbsenceRequest):
     try:
         session.add(absence)
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
         raise
 
@@ -63,7 +65,8 @@ def delete_absence(id):
         session.query(orm.Zastepstwo).filter_by(nieobecnosci_id=id).delete()
         del_rows = session.query(orm.Nieobecnosci).filter_by(id=id).delete()
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
     return del_rows
 
@@ -119,7 +122,8 @@ def insert_substitution(request: CreateSubRequest):
     try:
         session.add(sub)
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
         raise
 
@@ -128,6 +132,49 @@ def delete_substitution(id):
     try:
         del_rows = session.query(orm.Zastepstwo).filter_by(id=id).delete()
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
     return del_rows
+
+def get_able_to_substitute(request: GetAbleToSubstituteRequest):
+    absence = session.query(orm.Nieobecnosci).filter_by(id=request.id_nieobecnosci).one()
+    emp_absent = session.query(orm.Pracownik).filter_by(id=absence.pracownik_id).one()
+    query_result = session.query(orm.Pracownik).\
+        join(orm.SlownikZastepstw, orm.Pracownik.id == orm.SlownikZastepstw.pracownik_kto).\
+        filter(orm.SlownikZastepstw.pracownik_kogo == emp_absent.id).all()
+    return pack_in_json(query_result, schemas.Pracownik.from_orm)
+
+def insert_sub_dict(request: AddSubDictRequest):
+    sub_dict = orm.SlownikZastepstw(pracownik_kto=request.kto, pracownik_kogo=request.kogo)
+    try:
+        session.add(sub_dict)
+        session.commit()
+    except:
+        session.rollback()
+        raise
+
+def delete_sub_dict(id):
+    del_rows = 0
+    sub_dict = session.query(orm.SlownikZastepstw).filter_by(id=id).one()
+    absences = session.query(orm.Nieobecnosci).filter_by(pracownik_id=sub_dict.pracownik_kogo).all()
+    try:
+        for ab in absences:
+            session.query(orm.Zastepstwo).filter_by(nieobecnosci_id=ab.id).delete()
+            session.query(orm.Nieobecnosci).filter_by(id=ab.id).delete()
+        del_rows = session.query(orm.SlownikZastepstw).filter_by(id=id).delete()
+        session.commit()
+    except Exception as e:
+        print(e)
+        session.rollback()
+    return del_rows
+
+def get_all_skills(request: GetSkillsRequest):
+    emp = session.query(orm.Pracownik).filter_by(id=request.id_pracownika).one()
+    skills_id = session.execute(f"SELECT * FROM kompetencje_pracownika WHERE pracownik_id={request.id_pracownika}")
+    result = []
+    for skill_id in skills_id.fetchall():
+        print(skill_id)
+        skill = session.query(orm.Kompetencja).filter_by(id=skill_id[0]).one()
+        result.append(schemas.Kompetencja.from_orm(skill).dict())
+    return jsonify(result)

@@ -14,3 +14,13 @@ class GetPresentTimePeriodRequest(BaseModel):
 class CreateSubRequest(BaseModel):
     id_nieobecnosci: int
     id_pracownika: int
+
+class GetAbleToSubstituteRequest(BaseModel):
+    id_nieobecnosci: int
+
+class AddSubDictRequest(BaseModel):
+    kto: int
+    kogo: int
+
+class GetSkillsRequest(BaseModel):
+    id_pracownika: int

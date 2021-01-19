@@ -3,6 +3,7 @@ from app.orm import KontoUzytkownika
 import app.crud as crud
 import app.schemas as schemas
 from app.request_models import CreateAbsenceRequest, GetPresentTimePeriodRequest, CreateSubRequest
+from app.request_models import GetAbleToSubstituteRequest, AddSubDictRequest, GetSkillsRequest
 from app.exception import NoEntryInSubDict
 from flask_pydantic import validate
 from flask import request
@@ -108,3 +109,28 @@ def subordinate_abs_and_subs(id):
 @validate(body=GetPresentTimePeriodRequest)
 def subordinate_present():
     return crud.get_subordinate_present_in_period(request.body_params)
+
+@app.route('/api/employee/able-to-substitute', methods=['GET'])
+@validate(body=GetAbleToSubstituteRequest)
+def get_able_to_substitute():
+    return crud.get_able_to_substitute(request.body_params)
+
+@app.route('/api/sub-dict', methods=['POST'])
+@validate(body=AddSubDictRequest)
+def add_sub_dict():
+    try:
+        crud.insert_sub_dict(request.body_params)
+    except Exception as e:
+        print(e)
+        return {}, HTTPStatus.CONFLICT
+    return {}, HTTPStatus.OK
+
+@app.route('/api/sub-dict/<id>', methods=['DELETE'])
+def delete_sub_dict(id):
+    affected_rows = crud.delete_sub_dict(id)
+    return {"affected rows": affected_rows}, HTTPStatus.OK
+
+@app.route('/api/skills')
+@validate(body=GetSkillsRequest)
+def get_skills():
+    return crud.get_all_skills(request.body_params)
