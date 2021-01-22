@@ -5,8 +5,6 @@ import axios from 'axios';
 
 function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, setMsg }) {
 
-  const { user } = React.useContext(UserContext);
-
   const [addMode, setAddMode] = useState(false);
 
   const [drop, setDrop] = useState([]);
@@ -14,10 +12,8 @@ function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, s
 
   useEffect(() => {
     if (addMode) {
-      axios.post(`${apiUrl}/api/employee/present-timeperiod`, {
-        id_przelozonego: user.id,
-        koniec: `${koniec.getFullYear()}-${1 + koniec.getMonth()}-${koniec.getDate()}`,
-        poczatek: `${poczatek.getFullYear()}-${1 + poczatek.getMonth()}-${poczatek.getDate()}`
+      axios.post(`${apiUrl}/api/employee/able-to-substitute`, {
+        id_nieobecnosci: id
       })
         .then(res => {
           setForm({ id: res.data[0].id });
@@ -26,7 +22,7 @@ function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, s
         .catch(err => 0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addMode, id, user.id]);
+  }, [addMode, id]);
 
   const handleDelete = () => {
     axios.delete(`${apiUrl}/api/substitution/${substitutions[0].id}`)
@@ -39,7 +35,10 @@ function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, s
       id_nieobecnosci: id,
       id_pracownika: parseInt(form.id)
     })
-      .then(res => handleUpdate())
+      .then(res => {
+        setAddMode(false);
+        handleUpdate();
+      })
       .catch(err => setMsg("Błąd przy dodawaniu zastępstwa"));
   };
 
