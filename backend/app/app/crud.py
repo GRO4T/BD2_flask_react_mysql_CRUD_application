@@ -209,7 +209,13 @@ def get_sub_dict_by_superior(id):
             )
         ).all()
         for sub_dict in sub_dicts:
-            result.append(schemas.SlownikZastepstw.from_orm(sub_dict).dict())
+            sub_result = schemas.SlownikZastepstw.from_orm(sub_dict).dict()
+            emp1 = session.query(orm.Pracownik).filter_by(id=sub_dict.pracownik_kto).one()
+            emp2 = session.query(orm.Pracownik).filter_by(id=sub_dict.pracownik_kogo).one()
+            sub_result["pracownik_kto_imie"] = emp1.imie
+            sub_result["pracownik_kto_nazwisko"] = emp1.nazwisko
+            sub_result["pracownik_kogo_imie"] = emp2.imie
+            sub_result["pracownik_kogo_nazwisko"] = emp2.nazwisko
+            result.append(sub_result)
     return jsonify(result)
-
 
