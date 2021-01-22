@@ -142,7 +142,7 @@ def get_sub_dict_by_absent(id):
 def get_sub_dict_by_superior(id):
     return crud.get_sub_dict_by_superior(id)
 
-@app.route('/api/skills', methods=['POST'])
+@app.route('/api/skills')
 @validate(body=GetSkillsRequest)
 def get_skills():
     return crud.get_all_skills(request.body_params)

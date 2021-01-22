@@ -130,6 +130,9 @@ def delete_sub_dict(id):
     affected_rows = crud.delete_sub_dict(id)
     return {"affected rows": affected_rows}, HTTPStatus.OK
 
+<<<<<<< HEAD
+@app.route('/api/skills', methods=['POST'])
+=======
 @app.route('/api/sub-dict/by-substitute/<id>', methods=['GET'])
 def get_sub_dict_by_substitute(id):
     return crud.get_sub_dict_by_substitute(id)
@@ -142,7 +145,8 @@ def get_sub_dict_by_absent(id):
 def get_sub_dict_by_superior(id):
     return crud.get_sub_dict_by_superior(id)
 
-@app.route('/api/skills', methods=['POST'])
+@app.route('/api/skills')
+>>>>>>> master
 @validate(body=GetSkillsRequest)
 def get_skills():
     return crud.get_all_skills(request.body_params)

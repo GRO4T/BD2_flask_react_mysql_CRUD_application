@@ -185,3 +185,31 @@ def get_all_skills(request: GetSkillsRequest):
         skill = session.query(orm.Kompetencja).filter_by(id=skill_id[0]).one()
         result.append(schemas.Kompetencja.from_orm(skill).dict())
     return jsonify(result)
+
+def get_sub_dict_by_substitute(id):
+    return pack_in_json(
+        session.query(orm.SlownikZastepstw).filter_by(pracownik_kto=id).all(),
+        schemas.SlownikZastepstw.from_orm
+    )
+
+def get_sub_dict_by_absent(id):
+    return pack_in_json(
+        session.query(orm.SlownikZastepstw).filter_by(pracownik_kogo=id).all(),
+        schemas.SlownikZastepstw.from_orm
+    )
+
+def get_sub_dict_by_superior(id):
+    subordinates = session.query(orm.Pracownik).filter_by(pracownik_id=id).all()
+    result = []
+    for subordinate in subordinates:
+        sub_dicts = session.query(orm.SlownikZastepstw).filter(
+            or_(
+                orm.SlownikZastepstw.pracownik_kto == subordinate.id,
+                orm.SlownikZastepstw.pracownik_kogo == subordinate.id
+            )
+        ).all()
+        for sub_dict in sub_dicts:
+            result.append(schemas.SlownikZastepstw.from_orm(sub_dict).dict())
+    return jsonify(result)
+
+
