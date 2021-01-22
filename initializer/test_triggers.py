@@ -141,31 +141,6 @@ def test_update_zespol():
         sql_and_assert(cursor, sql, True)
         TEST_CONN.rollback()
 
-def test_insert_nieobecnosc():
-    with TEST_CONN.cursor() as cursor:
-        # próba dodania nieobecności z nieprawidłowym początkiem i końcem
-        sql = "SELECT pracownik_kogo FROM slownik_zastepstw LIMIT 1"
-        cursor.execute(sql)
-        emp_id = cursor.fetchone()[0]
-        start = "2020-05-18"
-        end = "2020-04-18"
-        sql = "INSERT INTO nieobecnosci (poczatek, koniec, pracownik_id) VALUES('{}', '{}', {})".format(start, end, emp_id)
-        sql_and_assert(cursor, sql, False)
-        # próba dodania nieobecności, które pokrywa się już z istniejąca dla danego pracownika
-        sql = "SELECT poczatek, koniec, pracownik_id FROM nieobecnosci LIMIT 1";
-        cursor.execute(sql)
-        start, end, emp_id = cursor.fetchone()
-        sql = "INSERT INTO nieobecnosci (poczatek, koniec, pracownik_id) VALUES('{}', '{}', {})".format(start, end, emp_id)
-        sql_and_assert(cursor, sql, False)
-        print(type(start))
-        # prawidłowe dodanie
-        sql = "SELECT id FROM pracownik WHERE id NOT IN (SELECT pracownik_id FROM nieobecnosci)"
-        cursor.execute(sql)
-        emp_id = cursor.fetchone()[0]
-        print(emp_id)
-        sql = "INSERT INTO nieobecnosci (poczatek, koniec, pracownik_id) VALUES('{}', '{}', {})".format(start, end, emp_id)
-        sql_and_assert(cursor, sql, True)
-
 def test_update_nieobecnosc():
     with TEST_CONN.cursor() as cursor:
         # próba modyfikacji nieobecności ustawiając błędne ramy czasowe
