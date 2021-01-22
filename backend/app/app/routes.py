@@ -105,12 +105,12 @@ def delete_absence(id):
 def subordinate_abs_and_subs(id):
     return crud.get_subordinate_abs_and_subs(id)
 
-@app.route('/api/employee/present-timeperiod', methods=['POST'])
+@app.route('/api/employee/present-timeperiod', methods=['GET'])
 @validate(body=GetPresentTimePeriodRequest)
 def subordinate_present():
     return crud.get_subordinate_present_in_period(request.body_params)
 
-@app.route('/api/employee/able-to-substitute', methods=['POST'])
+@app.route('/api/employee/able-to-substitute', methods=['GET'])
 @validate(body=GetAbleToSubstituteRequest)
 def get_able_to_substitute():
     return crud.get_able_to_substitute(request.body_params)
@@ -129,6 +129,18 @@ def add_sub_dict():
 def delete_sub_dict(id):
     affected_rows = crud.delete_sub_dict(id)
     return {"affected rows": affected_rows}, HTTPStatus.OK
+
+@app.route('/api/sub-dict/by-substitute/<id>', methods=['GET'])
+def get_sub_dict_by_substitute(id):
+    return crud.get_sub_dict_by_substitute(id)
+
+@app.route('/api/sub-dict/by-absent/<id>', methods=['GET'])
+def get_sub_dict_by_absent(id):
+    return crud.get_sub_dict_by_absent(id)
+
+@app.route('/api/sub-dict/by-superior/<id>')
+def get_sub_dict_by_superior(id):
+    return crud.get_sub_dict_by_superior(id)
 
 @app.route('/api/skills')
 @validate(body=GetSkillsRequest)
