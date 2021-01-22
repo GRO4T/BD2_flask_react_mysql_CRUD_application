@@ -110,7 +110,7 @@ def subordinate_abs_and_subs(id):
 def subordinate_present():
     return crud.get_subordinate_present_in_period(request.body_params)
 
-@app.route('/api/employee/able-to-substitute', methods=['GET'])
+@app.route('/api/employee/able-to-substitute', methods=['POST'])
 @validate(body=GetAbleToSubstituteRequest)
 def get_able_to_substitute():
     return crud.get_able_to_substitute(request.body_params)
