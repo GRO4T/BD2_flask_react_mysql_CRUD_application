@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import DodajZastepstwo from './components/DodajZastepstwo';
 import DodajNieobecnosc from './components/DodajNieobecnosc';
+import EdytujSlownik from './components/EdytujSlownik';
 import UserContext from './contexts/UserContext';
 import apiUrl from './api-url';
 
@@ -17,6 +18,14 @@ function App() {
     token: "",
     id: ""
   });
+
+  useEffect(() => {
+    const username = sessionStorage.getItem("user");
+    const token = sessionStorage.getItem("token");
+    if(username && token){
+      setUser({ username, token });
+    }
+  }, []);
 
   useEffect(() => {
     if (user.username) {
@@ -47,6 +56,9 @@ function App() {
               </Route>
               <Route exact path="/dodajZastepstwo">
                 <DodajZastepstwo />
+              </Route>
+              <Route exact path="/edytujSlownik">
+                <EdytujSlownik />
               </Route>
               <Route exact path="/login">
                 <Login />

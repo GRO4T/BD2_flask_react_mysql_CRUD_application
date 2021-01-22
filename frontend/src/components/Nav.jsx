@@ -5,6 +5,11 @@ import UserContext from '../contexts/UserContext';
 function Nav() {
   const { user, setUser } = React.useContext(UserContext);
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    setUser({});
+  }
+
   return (
     <header>
       <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
@@ -20,13 +25,16 @@ function Nav() {
                   <li className="nav-item">
                     <NavLink exact to="/dodajZastepstwo" className="nav-link text-light">Dodaj zastępstwo</NavLink>
                   </li>
+                  <li className="nav-item">
+                    <NavLink exact to="/edytujSlownik" className="nav-link text-light">Edytuj Słownik</NavLink>
+                  </li>
                   <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
                     <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                     </ul>
                     <form className="form-inline my-2 my-lg-0">
                       <span className="text-white font-weight-bold">{user.username}</span>
                       <li className="nav-item">
-                        <button className="btn btn-link text-light" onClick={() => setUser({})}>Wyloguj</button>
+                        <button className="btn btn-link text-light" onClick={handleLogout}>Wyloguj</button>
                       </li>
                     </form>
                   </div>

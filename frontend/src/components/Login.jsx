@@ -36,6 +36,8 @@ function Login(props) {
             username: form.user,
             token: res.access_token
           });
+          sessionStorage.setItem("user", form.user);
+          sessionStorage.setItem("token", res.access_token);
         } else {
           setMsg("Zła nazwa użytkownika lub hasło");
         }

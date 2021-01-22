@@ -130,7 +130,7 @@ def delete_sub_dict(id):
     affected_rows = crud.delete_sub_dict(id)
     return {"affected rows": affected_rows}, HTTPStatus.OK
 
-@app.route('/api/skills')
+@app.route('/api/skills', methods=['POST'])
 @validate(body=GetSkillsRequest)
 def get_skills():
     return crud.get_all_skills(request.body_params)
