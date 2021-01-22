@@ -6,7 +6,6 @@ import DodajZastepstwo from './components/DodajZastepstwo';
 import DodajNieobecnosc from './components/DodajNieobecnosc';
 import EdytujSlownik from './components/EdytujSlownik';
 import UserContext from './contexts/UserContext';
-import apiUrl from './api-url';
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
@@ -22,14 +21,14 @@ function App() {
   useEffect(() => {
     const username = sessionStorage.getItem("user");
     const token = sessionStorage.getItem("token");
-    if(username && token){
+    if (username && token) {
       setUser({ username, token });
     }
   }, []);
 
   useEffect(() => {
     if (user.username) {
-      fetch(`${apiUrl}/api/employee/by-username/${user.username}`)
+      fetch(`/api/employee/by-username/${user.username}`)
         .then(res => res.json())
         .then(body => setUser(u => ({ ...u, id: body[0].id })));
     }

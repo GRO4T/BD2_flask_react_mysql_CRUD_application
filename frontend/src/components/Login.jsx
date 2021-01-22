@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import apiUrl from '../api-url';
 import axios from 'axios';
 import UserContext from '../contexts/UserContext';
 
@@ -16,7 +15,7 @@ function Login(props) {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/test`)
+    fetch(`/api/test`)
       .then(res => {
         if (res.status !== 200) {
           setMsg("Network error");
@@ -26,7 +25,7 @@ function Login(props) {
   }, []);
 
   const handleSubmit = e => {
-    axios.post(`${apiUrl}/api/auth`, {
+    axios.post(`/api/auth`, {
       username: form.user,
       password: form.password
     })

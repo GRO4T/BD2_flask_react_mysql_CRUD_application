@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import apiUrl from '../api-url';
 import UserContext from '../contexts/UserContext';
 import axios from 'axios';
 
@@ -20,7 +19,7 @@ function EdytujSlownik(props) {
 
   useEffect(() => {
     fetchDict();
-    fetch(`${apiUrl}/api/employee/by-superior/${user.id}`)
+    fetch(`/api/employee/by-superior/${user.id}`)
       .then(res => {
         if (res.status === 200) {
           return res.json();
@@ -40,9 +39,12 @@ function EdytujSlownik(props) {
         }
       })
       .catch(err => setMsg({ bad: "Network error" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.id]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => fetchSkills(1), [chosenEmp]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => fetchSkills(2), [chosenEmp2]);
 
   const fetchSkills = (emp) => {
@@ -53,7 +55,7 @@ function EdytujSlownik(props) {
         : setSkills([]);
       return;
     }
-    axios.post(`${apiUrl}/api/skills`, {
+    axios.post(`/api/skills`, {
       id_pracownika: id
     })
       .then(res => {
@@ -65,7 +67,7 @@ function EdytujSlownik(props) {
   }
 
   const fetchDict = () => {
-    axios.get(`${apiUrl}/api/sub-dict/by-superior/${user.id}`)
+    axios.get(`/api/sub-dict/by-superior/${user.id}`)
       .then(res => {
         setDict(res.data);
       })
@@ -73,13 +75,13 @@ function EdytujSlownik(props) {
   }
 
   const handleDelete = e => {
-    axios.delete(`${apiUrl}/api/sub-dict/${e.target.value}`)
+    axios.delete(`/api/sub-dict/${e.target.value}`)
       .then(res => fetchDict())
       .catch(err => setMsg({ bad: "Possibly critical server error" }));
   }
 
   const handleSubmit = () => {
-    axios.post(`${apiUrl}/api/sub-dict`, {
+    axios.post(`/api/sub-dict`, {
       kto: chosenEmp2.id,
       kogo: chosenEmp.id
     })

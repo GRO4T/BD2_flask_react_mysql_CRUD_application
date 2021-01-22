@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import apiUrl from '../api-url';
 import UserContext from '../contexts/UserContext';
 import axios from 'axios';
 import Zastepstwo from './Zastepstwo';
@@ -17,7 +16,7 @@ function DodajZastepstwo(props) {
   }, []);
 
   const fetchAbs = () => {
-    axios.get(`${apiUrl}/api/employee/${user.id}/subordinate-abs-subs`)
+    axios.get(`/api/employee/${user.id}/subordinate-abs-subs`)
       .then(res => {
         if (!res.data.length) {
           setMsg("Brak uprawnień lub brak nieobecności.");

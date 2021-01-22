@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import apiUrl from '../api-url';
 import axios from 'axios';
 import UserContext from '../contexts/UserContext';
 
@@ -16,13 +15,13 @@ function Dashboard() {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    axios.get(`${apiUrl}/api/absence/by-emp-id/${user.id}`)
+    axios.get(`/api/absence/by-emp-id/${user.id}`)
       .then(res => {
         setAbsFetch(res.data);
       })
       .catch(err => setMsg("Network error"));
 
-    axios.get(`${apiUrl}/api/substitution/by-substitute/${user.id}`)
+    axios.get(`/api/substitution/by-substitute/${user.id}`)
       .then(res => {
         setSubFetch(res.data);
       })

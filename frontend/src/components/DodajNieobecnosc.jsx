@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import apiUrl from '../api-url';
 import UserContext from '../contexts/UserContext';
 import axios from 'axios';
 
@@ -20,7 +19,7 @@ function DodajNieobecnosc(props) {
   });
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/employee/by-superior/${user.id}`)
+    fetch(`/api/employee/by-superior/${user.id}`)
       .then(res => {
         if (res.status === 200) {
           return res.json();
@@ -53,7 +52,7 @@ function DodajNieobecnosc(props) {
   }, [chosenEmp]);
 
   const fetchAbs = () => {
-    axios.get(`${apiUrl}/api/absence/by-emp-id/${chosenEmp.id}`)
+    axios.get(`/api/absence/by-emp-id/${chosenEmp.id}`)
       .then(res => {
         const conv = res.data.map(a => ({
           from: new Date(a.poczatek.substring(5)),
@@ -70,12 +69,12 @@ function DodajNieobecnosc(props) {
   }
 
   const handleDelete = e => {
-    axios.delete(`${apiUrl}/api/absence/${e.target.value}`)
+    axios.delete(`/api/absence/${e.target.value}`)
       .then(res => fetchAbs());
   }
 
   const handleSubmit = e => {
-    axios.post(`${apiUrl}/api/absence`, {
+    axios.post(`/api/absence`, {
       id: chosenEmp.id,
       koniec: absDate.to,
       poczatek: absDate.from

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import apiUrl from '../api-url';
 import axios from 'axios';
 
 function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, setMsg }) {
@@ -11,7 +10,7 @@ function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, s
 
   useEffect(() => {
     if (addMode) {
-      axios.post(`${apiUrl}/api/employee/able-to-substitute`, {
+      axios.post(`/api/employee/able-to-substitute`, {
         id_nieobecnosci: id
       })
         .then(res => {
@@ -24,13 +23,13 @@ function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, s
   }, [addMode, id]);
 
   const handleDelete = () => {
-    axios.delete(`${apiUrl}/api/substitution/${substitutions[0].id}`)
+    axios.delete(`/api/substitution/${substitutions[0].id}`)
       .then(res => handleUpdate())
       .catch(err => setMsg("Błąd przy usuwaniu zastępstwa"));
   };
 
   const handleSubmit = () => {
-    axios.post(`${apiUrl}/api/substitution`, {
+    axios.post(`/api/substitution`, {
       id_nieobecnosci: id,
       id_pracownika: parseInt(form.id)
     })
