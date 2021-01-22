@@ -86,14 +86,14 @@ def get_subordinate_abs_and_subs(superior_id):
         for i in range(len(absences)):
             subs = session.query(orm.Zastepstwo).filter_by(nieobecnosci_id=absences[i].id).all()
             sub_data = []
-            for i in range(len(subs)):
-                sub_data.append(schemas.Zastepstwo.from_orm(subs[i]).dict())
+            for j in range(len(subs)):
+                sub_data.append(schemas.Zastepstwo.from_orm(subs[j]).dict())
                 substitute = session.query(orm.Pracownik).join(
                     orm.SlownikZastepstw,
                     orm.SlownikZastepstw.pracownik_kto == orm.Pracownik.id
-                ).filter(orm.SlownikZastepstw.id == subs[i].slowzast_id).one()
-                sub_data[i]["imie"] = substitute.imie
-                sub_data[i]["nazwisko"] = substitute.nazwisko
+                ).filter(orm.SlownikZastepstw.id == subs[j].slowzast_id).one()
+                sub_data[j]["imie"] = substitute.imie
+                sub_data[j]["nazwisko"] = substitute.nazwisko
             emp_data["absences"][i]["substitutions"] = sub_data
         response_data.append(emp_data)
     return jsonify(response_data)

@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 from sqlalchemy.orm import sessionmaker
 
-Session = sessionmaker(bind=db.engine)
+Session = sessionmaker(bind=db.engine, autocommit=False)
 session = Session()
 
 from app import routes
