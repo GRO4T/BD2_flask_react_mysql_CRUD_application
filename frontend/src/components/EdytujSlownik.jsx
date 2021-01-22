@@ -69,7 +69,20 @@ function EdytujSlownik(props) {
   const fetchDict = () => {
     axios.get(`/api/sub-dict/by-superior/${user.id}`)
       .then(res => {
-        setDict(res.data);
+        const wnames = res.data.map(d => ({
+          ...d,
+          kogo_name: `${d.pracownik_kogo_imie} ${d.pracownik_kogo_nazwisko}`,
+          kto_name: `${d.pracownik_kto_imie} ${d.pracownik_kto_nazwisko}`,
+          kogo_sort: `${d.pracownik_kogo_nazwisko} ${d.pracownik_kogo_imie}`,
+          kto_sort: `${d.pracownik_kto_nazwisko} ${d.pracownik_kto_imie}`
+        }))
+        wnames.sort((a, b) => {
+          if (a.kogo_name === b.kogo_name) {
+            return a.kto_sort > b.kto_sort;
+          }
+          return a.kogo_sort > b.kogo_sort;
+        });
+        setDict(wnames);
       })
       .catch(err => setMsg({ bad: "Network error" }));
   }
@@ -77,7 +90,10 @@ function EdytujSlownik(props) {
   const handleDelete = e => {
     axios.delete(`/api/sub-dict/${e.target.value}`)
       .then(res => fetchDict())
-      .catch(err => setMsg({ bad: "Possibly critical server error" }));
+      .catch(err => {
+        fetchDict();
+        setMsg({ bad: "Possibly critical server error" });
+      });
   }
 
   const handleSubmit = () => {
@@ -169,8 +185,8 @@ function EdytujSlownik(props) {
             <tbody>
               {dict.map(a => (
                 <tr key={a.id}>
-                  <td>{a.pracownik_kogo}</td>
-                  <td>{a.pracownik_kto}</td>
+                  <td>{a.kogo_name}</td>
+                  <td>{a.kto_name}</td>
                   <td>
                     <button type="button" className="btn btn-danger btn-sm" value={a.id} onClick={handleDelete}>
                       Usuń
