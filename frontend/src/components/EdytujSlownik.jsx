@@ -9,7 +9,6 @@ function EdytujSlownik(props) {
 
   const [msg, setMsg] = useState("");
 
-  const [abs, setAbs] = useState([]);
   const [dict, setDict] = useState([]);
 
   const [emps, setEmps] = useState([]);
@@ -20,6 +19,7 @@ function EdytujSlownik(props) {
   const [skills2, setSkills2] = useState([]);
 
   useEffect(() => {
+    fetchDict();
     fetch(`${apiUrl}/api/employee/by-superior/${user.id}`)
       .then(res => {
         if (res.status === 200) {
@@ -65,25 +65,17 @@ function EdytujSlownik(props) {
   }
 
   const fetchDict = () => {
-    axios.get(`${apiUrl}/api/absence/by-emp-id/${chosenEmp.id}`)
+    axios.get(`${apiUrl}/api/sub-dict/by-superior/${user.id}`)
       .then(res => {
-        const conv = res.data.map(a => ({
-          from: new Date(a.poczatek.substring(5)),
-          to: new Date(a.koniec.substring(5)),
-          id: a.id
-        }));
-        const date = new Date();
-        const yest = date.setDate(date.getDate() - 1);
-        const filter = conv.filter(c => c.to >= yest);
-        filter.sort((a, b) => a.from - b.from);
-        setAbs(filter);
+        setDict(res.data);
       })
       .catch(err => setMsg({ bad: "Network error" }));
   }
 
   const handleDelete = e => {
     axios.delete(`${apiUrl}/api/sub-dict/${e.target.value}`)
-      .then(res => fetchDict());
+      .then(res => fetchDict())
+      .catch(err => setMsg({ bad: "Possibly critical server error" }));
   }
 
   const handleSubmit = () => {
@@ -163,7 +155,7 @@ function EdytujSlownik(props) {
             </div>
           </div>
           <hr />
-          
+
           <table className="table table-hover table-dark" style={{ tableLayout: "fixed" }}>
             <thead>
               <tr>
@@ -173,14 +165,14 @@ function EdytujSlownik(props) {
               </tr>
             </thead>
             <tbody>
-              {abs.map(a => (
-                <tr key={a.from}>
-                  <td>{a.from.toLocaleDateString('pl-PL')}</td>
-                  <td>{a.to.toLocaleDateString('pl-PL')}</td>
+              {dict.map(a => (
+                <tr key={a.id}>
+                  <td>{a.pracownik_kogo}</td>
+                  <td>{a.pracownik_kto}</td>
                   <td>
                     <button type="button" className="btn btn-danger btn-sm" value={a.id} onClick={handleDelete}>
                       Usuń
-                </button>
+                    </button>
                   </td>
                 </tr>
               ))}
