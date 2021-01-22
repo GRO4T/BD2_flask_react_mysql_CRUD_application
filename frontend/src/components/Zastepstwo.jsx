@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import apiUrl from '../api-url';
-import UserContext from '../contexts/UserContext';
 import axios from 'axios';
 
 function Zastepstwo({ id, poczatek, koniec, name, substitutions, handleUpdate, setMsg }) {
