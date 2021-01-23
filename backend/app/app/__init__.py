@@ -14,9 +14,19 @@ app.config['JWT_AUTH_URL_RULE'] = "/api/auth"
 
 db = SQLAlchemy(app)
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
+Session = scoped_session(sessionmaker(bind=db.engine, autocommit=False))
 
-Session = sessionmaker(bind=db.engine, autocommit=False)
-session = Session()
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    Session.remove()
+
+class get_session():
+    def __init__(self):
+        self.session = Session()
+    def __enter__(self):
+        return self.session
+    def __exit__(self, *cos):
+        self.session.close()
 
 from app import routes

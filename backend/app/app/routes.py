@@ -1,4 +1,4 @@
-from app import app, session
+from app import app, get_session
 from app.orm import KontoUzytkownika
 import app.crud as crud
 import app.schemas as schemas
@@ -21,13 +21,15 @@ def index():
 
 
 def auth(username, password):
-    user = session.query(KontoUzytkownika).filter_by(nazwa_uzytkownika=username).first()
-    if user is not None and user.haslo == hashlib.sha256(password.encode()).hexdigest():
-        return user
+    with get_session() as session:
+        user = session.query(KontoUzytkownika).filter_by(nazwa_uzytkownika=username).first()
+        if user is not None and user.haslo == hashlib.sha256(password.encode()).hexdigest():
+            return user
 
 def identity(payload):
-    user_id = payload['identity']
-    return session.query(KontoUzytkownika).filter_by(id=user_id).first()
+    with get_session() as session:
+        user_id = payload['identity']
+        return session.query(KontoUzytkownika).filter_by(id=user_id).first()
 
 jwt = JWT(app, auth, identity)
 
