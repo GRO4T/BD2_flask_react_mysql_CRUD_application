@@ -178,3 +178,12 @@ BEFORE UPDATE ON zespol FOR EACH ROW
 BEGIN
 	CALL CheckManagers(NEW.kierownik_id);
 END;
+
+CREATE TRIGGER `insert_wpis_slownik` BEFORE INSERT ON `slownik_zastepstw`
+ FOR EACH ROW BEGIN
+    DECLARE has_identical INT;
+       SET has_identical = (SELECT COUNT(*) FROM slownik_zastepstw WHERE slownik_zastepstw.pracownik_kto = NEW.pracownik_kto AND slownik_zastepstw.pracownik_kogo = NEW.pracownik_kogo);
+       IF has_identical > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: Nie można dodać istniejącego wpisu!';
+    END IF;
+END;
