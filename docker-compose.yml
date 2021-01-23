@@ -37,8 +37,6 @@ services:
     volumes:
       - "./data/mysql:/var/lib/mysql:rw"
       - "./data/backup:/var/lib/backup:rw"
-    ports:
-      - "3306:3306"
   phpmyadmin:
     depends_on:
       - db
@@ -56,4 +54,4 @@ services:
     ports:
       - '5020:80'
     volumes:
-      - './data/dbface:/var/www/user'
+      - './dbface:/var/www/user'
