@@ -92,7 +92,7 @@ function EdytujSlownik(props) {
       .then(res => fetchDict())
       .catch(err => {
         fetchDict();
-        setMsg({ bad: "Possibly critical server error" });
+        setMsg({ bad: "Zwolnij!" });
       });
   }
 

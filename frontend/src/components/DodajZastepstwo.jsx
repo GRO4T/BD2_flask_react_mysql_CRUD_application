@@ -36,6 +36,9 @@ function DodajZastepstwo(props) {
           const filter = absf.filter(a => a.koniec >= yest);
           filter.sort((a, b) => a.poczatek - b.poczatek);
           setAbs(filter);
+          if(filter.length === 0){
+            setMsg("Brak uprawnień lub brak nieobecności.");
+          }
         }
       })
       .catch(err => setMsg('Network error'));
