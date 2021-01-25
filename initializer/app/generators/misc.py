@@ -30,9 +30,10 @@ def generate_absences_and_substitiutions(employees):
     abs_and_subs = []
     num_of_emps = len(employees)
     count = 0
-    for i in range(num_of_emps):
+    x = 1
+    for i in range(1, num_of_emps - 1):
         abs_and_subs.append([("slownik_zastepstw", {
-            "pracownik_kto": num_of_emps - i,
+            "pracownik_kto": i,
             "pracownik_kogo": i+1
         })])
         r = random.randint(1, 11)
@@ -56,8 +57,9 @@ def generate_absences_and_substitiutions(employees):
                 "poczatek": start,
                 "koniec": end,
                 "nieobecnosci_id": count,
-                "slowzast_id": i+1
+                "slowzast_id": x
             })])
+        x += 1
     return abs_and_subs
 
 def generate_responsibilities(employees):
